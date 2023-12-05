@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plutocracy Passengers</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* <link rel="stylesheet" href="styles.css"> */
+        /* Define a class for the clickable area */
+        body {
+            margin: 0;
+        }
+        .square {
+            position: absolute;
+            width: 23px; /* Adjust the width as needed */
+            height: 23px; /* Adjust the height as needed */
+            background-color: rgba(255, 0, 0, 0.5); /* Semi-transparent red background for visibility */
+            cursor: pointer;
+        }
+
+        .hexagon {
+            position: absolute;
+            width: 150px; /* Adjust the width as needed */
+            height: 86.60px; /* This is half the height of a regular hexagon */
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            background-color: rgba(255, 0, 0, 0.5); /* Semi-transparent red background for visibility */
+            cursor: pointer;
+            transform: rotate(90deg);  /*Rotate the hexagon by 90 degrees */
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <img id="mainboard" src="pics/mainboard.jpg" alt="Description of the big image" width="701" height="496" position="absolute">
+        <div id="clickable_square" class="square" onclick="handleClick('square')"></div>
+        <div id="clickable_hexagon" class="hexagon" onclick="handleClick('hexagon')"></div>
+    </div>
+    <!-- <div class="container">
+        <div class="row">
+            
+            <div class="col-md-8">
+                
+
+                
+            </div>
+            
+            <div class="col-md-4">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <img src="pics/Board_Earth.png" class="img-fluid" alt="Description of the first small image">
+                    </div>
+                    <div class="col-md-6">
+                        <img src="pics/Board_Mars.png" class="img-fluid" alt="Description of the second small image">
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <img src="pics/Board_Jupiter.png" class="img-fluid" alt="Description of the third small image">
+                    </div>
+                    <div class="col-md-6">
+                        <img src="pics/Board_Saturn.png" class="img-fluid" alt="Description of the fourth small image">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <img src="pics/Board_Uranus.png" class="img-fluid" alt="Description of the fifth small image">
+                    </div>
+                    <div class="col-md-6">
+                        <img src="pics/Board_Neptune.png" class="img-fluid" alt="Description of the sixth small image">
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </div>-->
+
+
+    <!-- Add links to your JavaScript files here -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    
+</body>
+
+</html>
