@@ -1,6 +1,8 @@
 let MAINBOARD_OFFSET = [0, 0];
+const PLANET_POSITION_OFFSET = [-3, 5]
+const SHIP_OFFSET = [1, 2]
+const TIME_MARKER_OFFSET = [3, 3]
 
-let CurrentPlanetPosition = [0,0,0,0,0,0]
 const EarthPositions = [[328,174], [328,286]]
 const MarsPositions = [[255,300],[255,160], [449,244]]
 const JupiterPositions = [
@@ -17,6 +19,12 @@ const NeptunPositions = [
 ]
 const Planets = [EarthPositions, MarsPositions, JupiterPositions, SaturnPositions, UranusPositions, NeptunPositions]
 
+const TU_POSITIONS = [[1,258.4],[1,235],[1,211.6],[1,188.2],[1,164.8],[1,141.4],[1,118],[1,94.6],[1,71.2],[1,47.8],[1,24.4],[1,1],[24.4,1],[47.8,1],[71.2,1],[94.6,1],[118,1],[141.4,1],[164.8,1],[188.2,1],[211.6,1],[235,1],[258.4,1],[281.8,1],[305.2,1],[328.6,1],[352,1],[375.4,1],[398.8,1],[422.2,1],[445.6,1],[469,1],[492.4,1],[515.8,1],[539.2,1],[562.6,1],[586,1],[609.4,1],[632.8,1],[656.2,1],[679.6,1],[679.6,24.4],[679.6,47.8],[679.6,71.2],[679.6,94.6],[679.6,118],[679.6,141.4],[679.6,164.8],[679.6,188.2],[679.6,211.6],[679.6,235],[679.6,258.4],[679.6,281.8],[679.6,305.2],[679.6,328.6],[679.6,352],[679.6,375.4],[679.6,398.8],[679.6,422.2],[679.6,445.6],[679.6,469],[656.2,469],[632.8,469],[609.4,469],[586,469],[562.6,469],[539.2,469],[515.8,469],[492.4,469],[469,469],[445.6,469],[422.2,469],[398.8,469],[375.4,469],[352,469]];
+
+let TimeSpent = 0
+let CurrentPlanetPosition = [0, 0, 0, 0, 0, 0]
+let SpacePosition = [0, 0]
+
 function handleClick(asd) {
     //alert('Clicked on the specified area!' + asd);
     console.log('Clicked on the specified area!' + asd)
@@ -32,8 +40,8 @@ function getImagePosition() {
 
 function getPosition(time_spent)
 {
-    const SIZE_TIMEBOX = 23.4
     var time_space = time_spent % 75
+    /*const SIZE_TIMEBOX = 23.4
     var x_pos = 0
     var y_pos = 0
 
@@ -57,9 +65,10 @@ function getPosition(time_spent)
         x_pos = (89 - time_space) * SIZE_TIMEBOX
         y_pos = 20*SIZE_TIMEBOX
     }
-    x_pos += 1 + MAINBOARD_OFFSET[0]
-    y_pos += 1 + MAINBOARD_OFFSET[1]
-    return [x_pos.toString(), y_pos.toString()]
+    x_pos += 1 
+    y_pos += 1 
+    return [x_pos, y_pos]*/
+    return [TU_POSITIONS[time_space][0], TU_POSITIONS[time_space][1]]
 }
 
 function shuffle(array) {
@@ -83,20 +92,20 @@ function shuffle(array) {
 
 function createTimeSpaces()
 {
-    //let allTU = []
+    let allTU = []
     for (let i = 0; i <= 74; i++) {
-        //allTU.push(getPosition(i))
+        allTU.push(getPosition(i))
         let newDiv = document.createElement('div');
         let position = getPosition(i)
         newDiv.className = 'square';
         newDiv.id = 'TU_' + i
         newDiv.addEventListener('click', function(){
             handleClick(i)});
-        newDiv.style.left = position[0] + 'px'
-        newDiv.style.top = position[1] + 'px'
+        newDiv.style.left = position[0] + MAINBOARD_OFFSET[0] + 'px'
+        newDiv.style.top = position[1] + MAINBOARD_OFFSET[1] + 'px'
         document.body.appendChild(newDiv);
       }
-    //console.log(allTU)
+    console.log(allTU)
 }
 
 function createHexSpaces()
@@ -121,11 +130,23 @@ function setup()
     let planet_markers = ['earth_marker', 'mars_marker', 'jupiter_marker', 'saturn_marker', 'uranus_marker', 'neptun_marker']
     for(let marker=0;marker<planet_markers.length;marker++){
         let image = document.getElementById(planet_markers[marker]);
-        image.style.left = Planets[marker][CurrentPlanetPosition[marker]][0] + MAINBOARD_OFFSET[0] + 'px'
-        image.style.top = Planets[marker][CurrentPlanetPosition[marker]][1] + MAINBOARD_OFFSET[1] + 'px'
+        image.style.left = Planets[marker][CurrentPlanetPosition[marker]][0] + MAINBOARD_OFFSET[0] + PLANET_POSITION_OFFSET[0] + 'px'
+        image.style.top = Planets[marker][CurrentPlanetPosition[marker]][1] + MAINBOARD_OFFSET[1] + PLANET_POSITION_OFFSET[1] + 'px'
         image.style.position = 'absolute';
-        console.log(image.style.left)
+        image.style.display = 'block';
     }
+
+    let ship_marker = document.getElementById('ship_marker');
+    ship_marker.style.left = MAINBOARD_OFFSET[0] + Planets[SpacePosition[0]][SpacePosition[1]][0] + SHIP_OFFSET[0] + 'px'
+    ship_marker.style.top = MAINBOARD_OFFSET[1] + Planets[SpacePosition[0]][SpacePosition[1]][1] + SHIP_OFFSET[1] + 'px'
+    ship_marker.style.position = 'absolute';
+    ship_marker.style.display = 'block';
+
+    let time_marker = document.getElementById('time_marker');
+    time_marker.style.left = MAINBOARD_OFFSET[0] + TU_POSITIONS[0][0] + TIME_MARKER_OFFSET[0] + 'px'
+    time_marker.style.top = MAINBOARD_OFFSET[1] + TU_POSITIONS[0][1] + TIME_MARKER_OFFSET[1] + 'px'
+    time_marker.style.position = 'absolute';
+    time_marker.style.display = 'block';
 }
 
 
@@ -145,9 +166,9 @@ function handleResize() {
 // Call the function when the page is loaded
 window.onload = function () {
     getImagePosition();
-    //setup()
     createTimeSpaces();
     createHexSpaces();
+    setup()
     
     Math.seedrandom('holymoly');
 
