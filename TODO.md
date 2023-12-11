@@ -1,22 +1,15 @@
 # TODOs to complete implementation
 
 - UI
-  - add passengers on planets
-  - make passengers on current planet clickable (if possible)
-  - add draw deck
-  - add event tokens
-  - add discard pile
-  - add ships with 4 seats + passengers
-  - add button to finish turn
-  - handle resize only by adjusting positions, not reload
+  - handle multiple tokens/TU on same space
+  - handle image of screen correctly when refreshing ui
 
 - Logic
-  - start position
-  - rotation event
-  - passenger event
+  - choose start position
   - automatic drop of passengers
   - taking a passenger
   - flying
+  - create distance matrix
 
 - Extra Features after everything works
   - make look nice
@@ -26,3 +19,7 @@
     - show draw pile on mouseover
   - Highscore
   - show history
+  - start game
+    - difficulty
+    - seed
+    - starting position

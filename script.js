@@ -1,6 +1,6 @@
 //UI Positions
 const PLANET_POSITION_OFFSET = [-3, 5]
-const SHIP_OFFSET = [1, 2]
+const SHIP_POSITION_OFFSET = [1, 2]
 const TIME_MARKER_OFFSET = [3, 3]
 const EARTH_POSITIONS = [[328,174], [328,286]]
 const MARS_POSITIONS = [[255,300],[255,160], [449,244]]
@@ -22,6 +22,8 @@ const TU_POSITIONS = [[1,258.4],[1,235],[1,211.6],[1,188.2],[1,164.8],[1,141.4],
 let MAINBOARD_OFFSET = [0, 0]
 let DRAWING_PILE_OFFSET = [0, 0]
 let DISCARD_PILE_OFFSET = [0, 0]
+let PLANET_OFFSET = [0, 0]
+let SHIP_OFFSET = [0, 0]
 
 //State
 let TIME_SPENT = 0
@@ -35,24 +37,114 @@ let PASSENGER_DECK = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
 let DISCARD_PILE = []
 let PLANET_PASSENGERS = [[], [], [], [], [], []]
 let SHIP_PASSENGERS = [0, 0, 0, 0]
+let CURRENT_TURN = []
 let HISTORY = []
 
 
+function onClickTimeSpace(tu)
+{
+    console.log('onClickTimeSpace: ' + tu)
+}
+
+function onClickHex(planet, number)
+{
+    console.log('onClickHex: ' + planet + "," + number)
+}
+
+function onClickPlanetPassenger(planet, number)
+{
+    console.log('onClickPlanetPassenger: ' + planet + "," + number)
+}
+
+function reset_turn()
+{
+    CURRENT_TURN = []
+    refreshUI()
+}
+
+function end_turn()
+{
+    perform_passenger_event()
+    refreshUI()
+}
+
+function passenger_is_first_class(passenger){
+    return (passenger%3) == 1
+}
+
+function passenger_is_for_planet(passenger, planet){
+    return planet*3 < passenger && passenger <= (planet+1)*3
+}
+
+function draw_passenger(planet)
+{
+    if(PASSENGER_DECK.length == 0){
+        if(DISCARD_PILE.length == 0){
+            throw new Error("You loose. No more passengers.");
+        }
+        if(DISCARD_PILE.every(function(passenger){
+            return passenger_is_for_planet(passenger, planet)
+        })){
+            return 0
+        }
+        PASSENGER_DECK = DISCARD_PILE
+        DISCARD_PILE = []
+        shuffle(PASSENGER_DECK)
+    }
+    passenger = PASSENGER_DECK.pop()
+    if(passenger_is_for_planet(passenger, planet)){
+        DISCARD_PILE.push(passenger)
+        return draw_passenger(planet)
+    }
+    return passenger    
+}
+
+function perform_passenger_event()
+{
+    for(let planet=0;planet<CURRENT_PLANET_POSITIONS.length;planet++){
+        if(PLANET_PASSENGERS[planet].length >=3)
+        {
+            throw new Error("You loose. Already 3 passengers at "+ planet);
+        }
+        passenger = draw_passenger(planet)
+        if(passenger != 0){
+            PLANET_PASSENGERS[planet].push(passenger)
+        }
+    }
+}
+
+function perform_rotation_event()
+{
+    for(let planet=0;planet<CURRENT_PLANET_POSITIONS.length;planet++){
+        CURRENT_PLANET_POSITIONS[planet] = (CURRENT_PLANET_POSITIONS[planet] + 1) % PLANETS[planet].length
+    }
+}
+
+function perform_end_event()
+{
+    //TODO
+}
+
 function handleClick(asd) {
+    //TODO remove
     //alert('Clicked on the specified area!' + asd);
     console.log('Clicked on the specified area!' + asd)
     // You can replace the alert with your custom logic
 }
 
-function setImagePosition() {
+function getImagePosition() {
     var image = document.getElementById('mainboard');
     var rect = image.getBoundingClientRect();
+    PLANET_OFFSET[0] = rect.left
+    PLANET_OFFSET[1] = rect.top
     MAINBOARD_OFFSET[0] = rect.left
     MAINBOARD_OFFSET[1] = rect.top + 140
     DRAWING_PILE_OFFSET[0] = rect.left + 701 + 35
     DRAWING_PILE_OFFSET[1] = rect.top + 140 + 25
     DISCARD_PILE_OFFSET[0] = rect.left + 701 + 35
     DISCARD_PILE_OFFSET[1] = rect.top + 140 + 75
+    SHIP_OFFSET[0] = MAINBOARD_OFFSET[0] + 35
+    SHIP_OFFSET[1] = MAINBOARD_OFFSET[1] + 496 + 35
 }
 
 function getPosition(time_spent)
@@ -88,7 +180,7 @@ function createTimeSpaces()
         newDiv.className = 'square';
         newDiv.id = 'TU_' + i
         newDiv.addEventListener('click', function(){
-            handleClick(i)});
+            onClickTimeSpace(i)});
         newDiv.style.left = position[0] + MAINBOARD_OFFSET[0] + 'px'
         newDiv.style.top = position[1] + MAINBOARD_OFFSET[1] + 'px'
         document.body.appendChild(newDiv);
@@ -104,10 +196,26 @@ function createHexSpaces()
             newDiv.className = 'hex';
             newDiv.id = 'Planet_' + planet + "_" + i
             newDiv.addEventListener('click', function(){
-                handleClick("Neptun" + i)});
+                onClickHex(planet, i)});
             newDiv.style.left = position[0] + MAINBOARD_OFFSET[0] + 'px'
             newDiv.style.top = position[1] + MAINBOARD_OFFSET[1] + 'px'
             document.body.appendChild(newDiv);
+        }
+    }
+}
+
+function createPlanetPassengers()
+{
+    for(let planet=0;planet<6;planet++){
+        for(let i=0;i<3;i++){
+            let el = document.createElement('img');
+            el.id = 'Passenger_' + i + '_Planet_' + planet
+            el.style.width = "70px"
+            el.style.display = 'none'
+            el.addEventListener('click', function(){
+                onClickPlanetPassenger(planet, i)});
+            el.src = "pics/back.jpg"
+            document.body.appendChild(el);
         }
     }
 }
@@ -131,7 +239,7 @@ function setup(seed, difficulty)
     END_EVENT = difficulty
     Math.seedrandom(seed);
     shuffle(PASSENGER_DECK);
-    console.log(HISTORY)
+    perform_passenger_event()
 }
 
 
@@ -147,49 +255,80 @@ function handleMouseClick(event) {
 function setPosition(element_id, position)
 {
     let el = document.getElementById(element_id)
-    el.style.left = position[0]
-    el.style.top = position[1]
+    el.style.left = position[0] + "px"
+    el.style.top = position[1] + "px"
     el.style.position = 'absolute';
     el.style.display = 'block';
+    return el
+}
+
+function setPositionFixedElements()
+{
+    for (let i = 0; i <= 74; i++) {
+        setPosition('TU_' + i, [TU_POSITIONS[i][0] + MAINBOARD_OFFSET[0], TU_POSITIONS[i][1] + MAINBOARD_OFFSET[1]])
+    }
+    for(let planet=0;planet<PLANETS.length;planet++){
+        for(let i=0;i<PLANETS[planet].length;i++){
+            setPosition('Planet_' + planet + "_" + i, [PLANETS[planet][i][0] + MAINBOARD_OFFSET[0], PLANETS[planet][i][1] + MAINBOARD_OFFSET[1]])
+        }
+        for(let i = 0; i<3;i++){
+            let position = [
+                PLANET_OFFSET[0] + 70 + planet*140,
+                PLANET_OFFSET[1] + i*46
+            ]
+            passenger = setPosition('Passenger_' + i + '_Planet_' + planet, position)
+            if(i<PLANET_PASSENGERS[planet].length){
+                passenger.src = "pics/" + PLANET_PASSENGERS[planet][i] + ".png"
+            }
+            else
+            {
+                passenger.style.display = "none"
+            }
+        }
+    }
+    setPosition('drawing_pile', DRAWING_PILE_OFFSET)
+    setPosition('discard_pile', DISCARD_PILE_OFFSET)
+
+    for(let seat=1; seat<5; seat++)
+    {
+        let el = document.getElementById("marker_" + seat)
+        el.style.position = 'absolute';
+        el.style.display = 'block';
+        var rect = el.getBoundingClientRect();
+        el.style.left = SHIP_OFFSET[0] + (seat-1)*80 + 30 + "px"
+        el.style.top = SHIP_OFFSET[1] - rect.height + "px"
+
+        setPosition("seat_" + seat,
+            [
+                SHIP_OFFSET[0] + (seat-1)*80,
+                SHIP_OFFSET[1] + 10
+            ]
+        )
+    }
+
+    setPosition('reset_turn', [DISCARD_PILE_OFFSET[0], SHIP_OFFSET[1]])
+    setPosition('end_turn', [DISCARD_PILE_OFFSET[0], SHIP_OFFSET[1] + 50])
 }
 
 function refreshUI()
 {
-    setImagePosition()
-    //TU
-    for (let i = 0; i <= 74; i++) {
-        let div = document.getElementById('TU_' + i)
-        div.style.left = TU_POSITIONS[i][0] + MAINBOARD_OFFSET[0] + 'px'
-        div.style.top = TU_POSITIONS[i][1] + MAINBOARD_OFFSET[1] + 'px'
-    }
-    //Hex
-    for(let planet=0;planet<PLANETS.length;planet++){
-        for(let i=0;i<PLANETS[planet].length;i++){
-            let div = document.getElementById('Planet_' + planet + "_" + i)
-            div.style.left = PLANETS[planet][i][0] + MAINBOARD_OFFSET[0] + 'px'
-            div.style.top = PLANETS[planet][i][1] + MAINBOARD_OFFSET[1] + 'px'
-        }
-    }
+    getImagePosition()
+    setPositionFixedElements()
     let planet_markers = ['earth_marker', 'mars_marker', 'jupiter_marker', 'saturn_marker', 'uranus_marker', 'neptun_marker']
     for(let marker=0;marker<planet_markers.length;marker++){
-        let image = document.getElementById(planet_markers[marker]);
-        image.style.left = PLANETS[marker][CURRENT_PLANET_POSITIONS[marker]][0] + MAINBOARD_OFFSET[0] + PLANET_POSITION_OFFSET[0] + 'px'
-        image.style.top = PLANETS[marker][CURRENT_PLANET_POSITIONS[marker]][1] + MAINBOARD_OFFSET[1] + PLANET_POSITION_OFFSET[1] + 'px'
-        image.style.position = 'absolute';
-        image.style.display = 'block';
+        setPosition(planet_markers[marker], 
+            [
+                PLANETS[marker][CURRENT_PLANET_POSITIONS[marker]][0] + MAINBOARD_OFFSET[0] + PLANET_POSITION_OFFSET[0],
+                PLANETS[marker][CURRENT_PLANET_POSITIONS[marker]][1] + MAINBOARD_OFFSET[1] + PLANET_POSITION_OFFSET[1]
+            ])
     }
 
-    let ship_marker = document.getElementById('ship_marker');
-    ship_marker.style.left = MAINBOARD_OFFSET[0] + PLANETS[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][0] + SHIP_OFFSET[0] + 'px'
-    ship_marker.style.top = MAINBOARD_OFFSET[1] + PLANETS[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][1] + SHIP_OFFSET[1] + 'px'
-    ship_marker.style.position = 'absolute';
-    ship_marker.style.display = 'block';
-
+    setPosition('ship_marker',
+                [
+                    MAINBOARD_OFFSET[0] + PLANETS[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][0] + SHIP_POSITION_OFFSET[0],
+                    MAINBOARD_OFFSET[1] + PLANETS[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][1] + SHIP_POSITION_OFFSET[1]
+                ])
     let drawing_pile = document.getElementById('drawing_pile')
-    drawing_pile.style.left = DRAWING_PILE_OFFSET[0] + "px"
-    drawing_pile.style.top = DRAWING_PILE_OFFSET[1] + "px"
-    drawing_pile.style.position = 'absolute';
-    drawing_pile.style.display = 'block';
     if(PASSENGER_DECK.length == 0)
     {
         drawing_pile.src = "pics/empty.png"
@@ -200,10 +339,6 @@ function refreshUI()
     }
 
     let discard_pile = document.getElementById('discard_pile')
-    discard_pile.style.left = DISCARD_PILE_OFFSET[0] + "px"
-    discard_pile.style.top = DISCARD_PILE_OFFSET[1] + "px"
-    discard_pile.style.position = 'absolute';
-    discard_pile.style.display = 'block';
     if(DISCARD_PILE.length == 0)
     {
         discard_pile.src = "pics/empty.png"
@@ -225,12 +360,13 @@ function handleResize() {
 
 // Call the function when the page is loaded
 window.onload = function () {
-    setImagePosition()
+    getImagePosition()
     createTimeSpaces()
     createHexSpaces()
+    createPlanetPassengers()
     setup('holymoly', 120)
     refreshUI()
 };
-document.addEventListener('click', handleMouseClick);
+document.addEventListener('click', handleMouseClick);//TODO remove + remove handleMouseClick
 window.addEventListener('resize', handleResize);
 
