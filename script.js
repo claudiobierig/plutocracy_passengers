@@ -26,10 +26,15 @@ let PLANET_OFFSET = [0, 0]
 let SHIP_OFFSET = [0, 0]
 
 //State
+const CHOOSE_STARTING_POSITION = 0
+const PLAYER_TURN = 1
+const ROTATION_TURN = 2
+const PASSENGER_TURN = 3
+const END_TURN = 4
+
 let TIME_SPENT = [0,0]
-let TIME_STACK_POSITION = 0
 let CURRENT_PLANET_POSITIONS = [0, 0, 0, 0, 0, 0]
-let SPACESHIP_POSITION = [0, 0]
+let SPACESHIP_POSITION = []
 let NEXT_ROTATE_EVENT = [10, 0]
 let NEXT_PASSENGER_EVENT = [20, 0]
 let END_EVENT = [120, 0]
@@ -37,17 +42,53 @@ let PASSENGER_DECK = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
 let DISCARD_PILE = []
 let PLANET_PASSENGERS = [[], [], [], [], [], []]
 let SHIP_PASSENGERS = [0, 0, 0, 0]
-let CURRENT_TURN = []
+let CURRENT_TURN = {}
+let NEXT_TURN_TYPE = CHOOSE_STARTING_POSITION
 let HISTORY = []
 
 
 function onClickTimeSpace(tu)
 {
-    console.log('onClickTimeSpace: ' + tu)
+    if(NEXT_TURN_TYPE != PLAYER_TURN){
+        return
+    }
+    if(!CURRENT_TURN.hasOwnProperty('destination'))
+    {
+        return
+    }
+    //TODO compute minimal time from position and CURRENT_TURN['destination']
+    let minimal_time = TIME_SPENT[0] + 5
+    let arrival_time = tu
+    while(arrival_time < minimal_time){
+        arrival_time += 75
+    }
+    CURRENT_TURN['arrival_time'] = arrival_time
+    refreshUI()
+}
+
+function onClickPlanet(planet){
+    onClickHex(planet, CURRENT_PLANET_POSITIONS[planet])
 }
 
 function onClickHex(planet, number)
 {
+    if(NEXT_TURN_TYPE == PLAYER_TURN){
+        CURRENT_TURN['destination'] = [planet, number]
+        if(!CURRENT_TURN.hasOwnProperty('arrival_time'))
+        {
+            //TODO correct time increasing property
+            CURRENT_TURN['arrival_time'] = TIME_SPENT[0] + 5
+        }
+    }
+    else if(NEXT_TURN_TYPE==CHOOSE_STARTING_POSITION)
+    {
+        CURRENT_TURN = {"destination": [planet, number]}
+    }
+    else
+    {
+        return
+    }
+    refreshUI()
     console.log('onClickHex: ' + planet + "," + number)
 }
 
@@ -58,14 +99,76 @@ function onClickPlanetPassenger(planet, number)
 
 function reset_turn()
 {
-    CURRENT_TURN = []
+    CURRENT_TURN = {}
     refreshUI()
 }
 
 function end_turn()
 {
-    perform_passenger_event()
-    refreshUI()
+    if(NEXT_TURN_TYPE==CHOOSE_STARTING_POSITION){
+        if(CURRENT_TURN.hasOwnProperty('destination')){
+            
+            SPACESHIP_POSITION = CURRENT_TURN['destination']
+        }
+    }
+    else if(NEXT_TURN_TYPE==PLAYER_TURN)
+    {
+        if(CURRENT_TURN.hasOwnProperty('destination'))
+        {
+            SPACESHIP_POSITION = CURRENT_TURN['destination']
+            let markers = [NEXT_ROTATE_EVENT, NEXT_PASSENGER_EVENT, END_EVENT]
+            let stack_position = markers.filter(function(arr){return arr[0] == CURRENT_TURN['arrival_time']}).length
+            TIME_SPENT = [
+                CURRENT_TURN['arrival_time'], 
+                stack_position
+            ]
+            //TODO: change passengers
+        }
+    }
+    else
+    {
+        return
+    }
+    CURRENT_TURN = {}
+    perform_next_turn()
+    refreshUI()    
+}
+
+function setNextTurnType()
+{
+    if(SPACESHIP_POSITION.length == 0){
+        return CHOOSE_STARTING_POSITION
+    }
+    let turns = [
+        [PLAYER_TURN, TIME_SPENT],
+        [ROTATION_TURN, NEXT_ROTATE_EVENT],
+        [PASSENGER_TURN, NEXT_PASSENGER_EVENT],
+        [END_TURN, END_EVENT]
+    ]
+    turns.sort(function(l, r){
+        if(l[1][0]<r[1][0] || (l[1][0]==r[1][0] && l[1][1]>r[1][1])){
+            return -1
+        }
+        return 1
+    })
+    NEXT_TURN_TYPE = turns[0][0]
+}
+
+function perform_next_turn()
+{
+    setNextTurnType()
+    if(NEXT_TURN_TYPE == ROTATION_TURN)
+    {
+        perform_rotation_event()
+    }
+    else if(NEXT_TURN_TYPE == PASSENGER_TURN)
+    {
+        perform_passenger_event()
+    }
+    else if(NEXT_TURN_TYPE == END_TURN)
+    {
+        perform_end_event()
+    }
 }
 
 function passenger_is_first_class(passenger){
@@ -111,18 +214,33 @@ function perform_passenger_event()
             PLANET_PASSENGERS[planet].push(passenger)
         }
     }
+    let markers = [TIME_SPENT, NEXT_ROTATE_EVENT, END_EVENT]
+    let stack_position = markers.filter(function(arr){return arr[0] == NEXT_PASSENGER_EVENT[0] + 20}).length
+    NEXT_PASSENGER_EVENT = [
+        NEXT_PASSENGER_EVENT[0] + 20, 
+        stack_position
+    ]
+    perform_next_turn()
 }
 
 function perform_rotation_event()
 {
+    //TODO take spaceship to new planet position
     for(let planet=0;planet<CURRENT_PLANET_POSITIONS.length;planet++){
         CURRENT_PLANET_POSITIONS[planet] = (CURRENT_PLANET_POSITIONS[planet] + 1) % PLANETS[planet].length
     }
+    let markers = [TIME_SPENT, NEXT_PASSENGER_EVENT, END_EVENT]
+    let stack_position = markers.filter(function(arr){return arr[0] == NEXT_ROTATE_EVENT[0] + 10}).length
+    NEXT_ROTATE_EVENT = [
+        NEXT_ROTATE_EVENT[0] + 10, 
+        stack_position
+    ]
+    perform_next_turn()
 }
 
 function perform_end_event()
 {
-    //TODO
+    throw new Error("You won.");
 }
 
 function handleClick(asd) {
@@ -174,6 +292,7 @@ function shuffle(array) {
 
 function createTimeSpaces()
 {
+    let container = document.getElementById("clickable_areas")
     for (let i = 0; i <= 74; i++) {
         let newDiv = document.createElement('div');
         let position = getPosition(i)
@@ -183,12 +302,13 @@ function createTimeSpaces()
             onClickTimeSpace(i)});
         newDiv.style.left = position[0] + MAINBOARD_OFFSET[0] + 'px'
         newDiv.style.top = position[1] + MAINBOARD_OFFSET[1] + 'px'
-        document.body.appendChild(newDiv);
+        container.appendChild(newDiv);
       }
 }
 
 function createHexSpaces()
 {
+    let container = document.getElementById("clickable_areas")
     for(let planet=0;planet<PLANETS.length;planet++){
         for(let i=0;i<PLANETS[planet].length;i++){
             let newDiv = document.createElement('div');
@@ -199,13 +319,14 @@ function createHexSpaces()
                 onClickHex(planet, i)});
             newDiv.style.left = position[0] + MAINBOARD_OFFSET[0] + 'px'
             newDiv.style.top = position[1] + MAINBOARD_OFFSET[1] + 'px'
-            document.body.appendChild(newDiv);
+            container.appendChild(newDiv);
         }
     }
 }
 
 function createPlanetPassengers()
 {
+    let container = document.getElementById("clickable_areas")
     for(let planet=0;planet<6;planet++){
         for(let i=0;i<3;i++){
             let el = document.createElement('img');
@@ -215,7 +336,7 @@ function createPlanetPassengers()
             el.addEventListener('click', function(){
                 onClickPlanetPassenger(planet, i)});
             el.src = "pics/back.jpg"
-            document.body.appendChild(el);
+            container.appendChild(el);
         }
     }
 }
@@ -237,7 +358,6 @@ function moveTimeMarkers()
     let marker_containter = document.getElementById("tu_markers");
     for(let marker=0;marker<time_markers.length;marker++)
     {
-        console.log(time_markers[marker][0])
         let m = moveMarkerToTu(time_markers[marker][0], time_markers[marker][1])
         marker_containter.prepend(m);
     }
@@ -256,11 +376,23 @@ function moveMarkerToTu(marker_name, tu)
 
 function setup(seed, difficulty)
 {
+    HISTORY = []
     HISTORY.push({
         'seed': seed,
         'difficulty': difficulty
     })
     END_EVENT = [difficulty, 0]
+    NEXT_TURN_TYPE = CHOOSE_STARTING_POSITION
+    SPACESHIP_POSITION = []
+    TIME_SPENT = [0,0]
+    CURRENT_PLANET_POSITIONS = [0, 0, 0, 0, 0, 0]
+    NEXT_ROTATE_EVENT = [10, 0]
+    NEXT_PASSENGER_EVENT = [20, 0]
+    PASSENGER_DECK = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+    DISCARD_PILE = []
+    PLANET_PASSENGERS = [[], [], [], [], [], []]
+    SHIP_PASSENGERS = [0, 0, 0, 0]
+    CURRENT_TURN = {}
     Math.seedrandom(seed);
     shuffle(PASSENGER_DECK);
     perform_passenger_event()
@@ -289,11 +421,18 @@ function setPosition(element_id, position)
 function setPositionFixedElements()
 {
     for (let i = 0; i <= 74; i++) {
-        setPosition('TU_' + i, [TU_POSITIONS[i][0] + MAINBOARD_OFFSET[0], TU_POSITIONS[i][1] + MAINBOARD_OFFSET[1]])
+        let el = setPosition('TU_' + i, [TU_POSITIONS[i][0] + MAINBOARD_OFFSET[0], TU_POSITIONS[i][1] + MAINBOARD_OFFSET[1]])
+        el.style.background = 'rgba(255, 0, 0, 0.1)'
     }
+    if(CURRENT_TURN.hasOwnProperty('arrival_time')){
+        let el = document.getElementById('TU_' + CURRENT_TURN['arrival_time']%75)
+        el.style.background = 'red'
+    }
+    
     for(let planet=0;planet<PLANETS.length;planet++){
         for(let i=0;i<PLANETS[planet].length;i++){
-            setPosition('Planet_' + planet + "_" + i, [PLANETS[planet][i][0] + MAINBOARD_OFFSET[0], PLANETS[planet][i][1] + MAINBOARD_OFFSET[1]])
+            let el = setPosition('Planet_' + planet + "_" + i, [PLANETS[planet][i][0] + MAINBOARD_OFFSET[0], PLANETS[planet][i][1] + MAINBOARD_OFFSET[1]])
+            el.style.background = 'rgba(255, 255, 255, 0.1)'
         }
         for(let i = 0; i<3;i++){
             let position = [
@@ -310,6 +449,12 @@ function setPositionFixedElements()
             }
         }
     }
+    if(CURRENT_TURN.hasOwnProperty('destination')){
+        const destination = CURRENT_TURN['destination']
+        let el = document.getElementById('Planet_' + destination[0] + "_" + destination[1])
+        el.style.background = 'red'
+    }
+
     setPosition('drawing_pile', DRAWING_PILE_OFFSET)
     setPosition('discard_pile', DISCARD_PILE_OFFSET)
 
@@ -334,6 +479,18 @@ function setPositionFixedElements()
     setPosition('end_turn', [DISCARD_PILE_OFFSET[0], SHIP_OFFSET[1] + 50])
 }
 
+function makePlanetsClickable()
+{
+    let planet_markers = ['earth_marker', 'mars_marker', 'jupiter_marker', 'saturn_marker', 'uranus_marker', 'neptun_marker']
+    for(let marker=0;marker<planet_markers.length;marker++){
+        let el = document.getElementById(planet_markers[marker])
+        el.addEventListener('click', function(){
+            onClickPlanet(marker)})
+    }
+    
+}
+    
+
 function refreshUI()
 {
     getImagePosition()
@@ -347,11 +504,14 @@ function refreshUI()
             ])
     }
 
-    setPosition('ship_marker',
-                [
-                    MAINBOARD_OFFSET[0] + PLANETS[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][0] + SHIP_POSITION_OFFSET[0],
-                    MAINBOARD_OFFSET[1] + PLANETS[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][1] + SHIP_POSITION_OFFSET[1]
-                ])
+    if(SPACESHIP_POSITION.length == 2){
+        setPosition('ship_marker',
+        [
+            MAINBOARD_OFFSET[0] + PLANETS[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][0] + SHIP_POSITION_OFFSET[0],
+            MAINBOARD_OFFSET[1] + PLANETS[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][1] + SHIP_POSITION_OFFSET[1]
+        ])
+    }
+    
     let drawing_pile = document.getElementById('drawing_pile')
     if(PASSENGER_DECK.length == 0)
     {
@@ -384,10 +544,11 @@ window.onload = function () {
     getImagePosition()
     createTimeSpaces()
     createHexSpaces()
+    makePlanetsClickable()
     createPlanetPassengers()
     setup('holymoly', 120)
     refreshUI()
+    setNextTurnType()
 };
 document.addEventListener('click', handleMouseClick);//TODO remove + remove handleMouseClick
 window.addEventListener('resize', handleResize);
-

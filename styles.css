@@ -40,7 +40,7 @@ footer {
     width: 25px; /* Adjust the width as needed */
     height: 30px; /* This is half the height of a regular hexagon */
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent red background for visibility */
+    background-color: rgba(255, 255, 255, 0.1);
     cursor: pointer;
     transform: rotate(90deg);  /*Rotate the hexagon by 90 degrees */
 }

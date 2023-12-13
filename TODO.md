@@ -1,13 +1,10 @@
 # TODOs to complete implementation
 
 - Logic
-  - choose start position
-  - handling turn/event
   - handling loosing/winning
   - automatic drop of passengers
   - taking a passenger
-  - flying
-  - create distance matrix
+  - create distance matrix, correct distances
 
 - Extra Features after everything works
   - make look nice
@@ -24,6 +21,8 @@
   - Rules link
   - Highscore
   - helper text
+  - show events happening
+  - show warning if we are travelling for too long
   - show history
   - start game
     - difficulty
