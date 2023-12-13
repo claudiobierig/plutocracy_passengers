@@ -26,13 +26,13 @@ let PLANET_OFFSET = [0, 0]
 let SHIP_OFFSET = [0, 0]
 
 //State
-let TIME_SPENT = 0
+let TIME_SPENT = [0,0]
 let TIME_STACK_POSITION = 0
 let CURRENT_PLANET_POSITIONS = [0, 0, 0, 0, 0, 0]
 let SPACESHIP_POSITION = [0, 0]
-let NEXT_ROTATE_EVENT = 10
-let NEXT_PASSENGER_EVENT = 20
-let END_EVENT = 120
+let NEXT_ROTATE_EVENT = [10, 0]
+let NEXT_PASSENGER_EVENT = [20, 0]
+let END_EVENT = [120, 0]
 let PASSENGER_DECK = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 let DISCARD_PILE = []
 let PLANET_PASSENGERS = [[], [], [], [], [], []]
@@ -220,14 +220,38 @@ function createPlanetPassengers()
     }
 }
 
+function moveTimeMarkers()
+{
+    var time_markers = [
+        ['time_marker', TIME_SPENT],
+        ['rotate_marker', NEXT_ROTATE_EVENT],
+        ['passenger_marker', NEXT_PASSENGER_EVENT],
+        ['end_marker', END_EVENT]
+    ]
+    time_markers.sort(function(l, r){
+        if(l[1][0]<r[1][0] || (l[1][0]==r[1][0] && l[1][1]>r[1][1])){
+            return -1
+        }
+        return 1
+    })
+    let marker_containter = document.getElementById("tu_markers");
+    for(let marker=0;marker<time_markers.length;marker++)
+    {
+        console.log(time_markers[marker][0])
+        let m = moveMarkerToTu(time_markers[marker][0], time_markers[marker][1])
+        marker_containter.prepend(m);
+    }
+}
+
 function moveMarkerToTu(marker_name, tu)
 {
-    var time_space = tu % 75
+    var time_space = tu[0] % 75
     let time_marker = document.getElementById(marker_name);
     time_marker.style.left = MAINBOARD_OFFSET[0] + TU_POSITIONS[time_space][0] + TIME_MARKER_OFFSET[0] + 'px'
-    time_marker.style.top = MAINBOARD_OFFSET[1] + TU_POSITIONS[time_space][1] + TIME_MARKER_OFFSET[1] + 'px'
+    time_marker.style.top = MAINBOARD_OFFSET[1] + TU_POSITIONS[time_space][1] - tu[1]*3 + TIME_MARKER_OFFSET[1] + 'px'
     time_marker.style.position = 'absolute';
     time_marker.style.display = 'block';
+    return time_marker
 }
 
 function setup(seed, difficulty)
@@ -236,7 +260,7 @@ function setup(seed, difficulty)
         'seed': seed,
         'difficulty': difficulty
     })
-    END_EVENT = difficulty
+    END_EVENT = [difficulty, 0]
     Math.seedrandom(seed);
     shuffle(PASSENGER_DECK);
     perform_passenger_event()
@@ -348,10 +372,7 @@ function refreshUI()
         discard_pile.src = "pics/" + DISCARD_PILE[DISCARD_PILE.length - 1] + ".png"
     }
 
-    moveMarkerToTu('time_marker', TIME_SPENT)
-    moveMarkerToTu('rotate_marker', NEXT_ROTATE_EVENT)
-    moveMarkerToTu('passenger_marker', NEXT_PASSENGER_EVENT)
-    moveMarkerToTu('end_marker', END_EVENT)
+    moveTimeMarkers()
 }
 
 function handleResize() {

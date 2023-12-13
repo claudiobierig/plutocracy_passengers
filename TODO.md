@@ -1,11 +1,9 @@
 # TODOs to complete implementation
 
-- UI
-  - handle multiple tokens/TU on same space
-  - handle image of screen correctly when refreshing ui
-
 - Logic
   - choose start position
+  - handling turn/event
+  - handling loosing/winning
   - automatic drop of passengers
   - taking a passenger
   - flying
@@ -13,11 +11,19 @@
 
 - Extra Features after everything works
   - make look nice
+    - buttons
+    - clickable areas
+    - handle image of screen correctly when refreshing ui
+    - fix window size?
+    - mark 1st class seats
   - add convenience stuff
     - show distance from ship position
     - show discard pile on mouseover
     - show draw pile on mouseover
+    - show stack sizes
+  - Rules link
   - Highscore
+  - helper text
   - show history
   - start game
     - difficulty
