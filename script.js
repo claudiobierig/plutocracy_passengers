@@ -36,7 +36,7 @@ let TIME_SPENT = [0,0]
 let CURRENT_PLANET_POSITIONS = [0, 0, 0, 0, 0, 0]
 let SPACESHIP_POSITION = []
 let NEXT_ROTATE_EVENT = [10, 0]
-let NEXT_PASSENGER_EVENT = [20, 0]
+let NEXT_PASSENGER_EVENT = [0, 0]
 let END_EVENT = [120, 0]
 let PASSENGER_DECK = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 let DISCARD_PILE = []
@@ -225,7 +225,9 @@ function perform_passenger_event()
 
 function perform_rotation_event()
 {
-    //TODO take spaceship to new planet position
+    if(CURRENT_PLANET_POSITIONS[SPACESHIP_POSITION[0]] == SPACESHIP_POSITION[1]){
+        SPACESHIP_POSITION[1] = (SPACESHIP_POSITION[1] + 1) % PLANETS[SPACESHIP_POSITION[0]].length
+    }
     for(let planet=0;planet<CURRENT_PLANET_POSITIONS.length;planet++){
         CURRENT_PLANET_POSITIONS[planet] = (CURRENT_PLANET_POSITIONS[planet] + 1) % PLANETS[planet].length
     }
@@ -387,7 +389,7 @@ function setup(seed, difficulty)
     TIME_SPENT = [0,0]
     CURRENT_PLANET_POSITIONS = [0, 0, 0, 0, 0, 0]
     NEXT_ROTATE_EVENT = [10, 0]
-    NEXT_PASSENGER_EVENT = [20, 0]
+    NEXT_PASSENGER_EVENT = [0, 0]
     PASSENGER_DECK = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
     DISCARD_PILE = []
     PLANET_PASSENGERS = [[], [], [], [], [], []]
