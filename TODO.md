@@ -4,7 +4,6 @@
   - handling loosing/winning
   - automatic drop of passengers
   - taking a passenger
-  - create distance matrix, correct distances
 
 - Extra Features after everything works
   - make look nice
