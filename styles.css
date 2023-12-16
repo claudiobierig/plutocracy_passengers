@@ -44,3 +44,11 @@ footer {
     cursor: pointer;
     transform: rotate(90deg);  /*Rotate the hexagon by 90 degrees */
 }
+
+.full img {
+    opacity: 1;
+}
+
+.transparant img {
+    opacity: 0.5;
+}

@@ -2,7 +2,6 @@
 
 - Logic
   - handling loosing/winning
-  - automatic drop of passengers
   - taking a passenger
 
 - Extra Features after everything works
