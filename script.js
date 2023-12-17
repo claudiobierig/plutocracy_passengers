@@ -220,8 +220,14 @@ function end_turn()
                 for(let p=0; p <CURRENT_TURN['pick_up'].length; p++)
                 {
                     SHIP_PASSENGERS[CURRENT_TURN['pick_up'][p][1]] = PLANET_PASSENGERS[SPACESHIP_POSITION[0]][CURRENT_TURN['pick_up'][p][0]]
-                    PLANET_PASSENGERS[SPACESHIP_POSITION[0]].splice(CURRENT_TURN['pick_up'][p][0], 1)
+                    PLANET_PASSENGERS[SPACESHIP_POSITION[0]][CURRENT_TURN['pick_up'][p][0]] = 0
                 }
+                let new_passengers = PLANET_PASSENGERS[SPACESHIP_POSITION[0]].filter(function(p){
+                    return !CURRENT_TURN['pick_up'].some(function(pick){
+                        return p==pick[0]
+                    })
+                })
+                PLANET_PASSENGERS[SPACESHIP_POSITION[0]] = new_passengers
             }
 
             SPACESHIP_POSITION = CURRENT_TURN['destination']
@@ -381,13 +387,6 @@ function perform_player_turn()
             }
         }
     }
-}
-
-function handleClick(asd) {
-    //TODO remove
-    //alert('Clicked on the specified area!' + asd);
-    console.log('Clicked on the specified area!' + asd)
-    // You can replace the alert with your custom logic
 }
 
 function getImagePosition() {
@@ -625,11 +624,9 @@ function setPositionFixedElements()
             for(let p=0; p <CURRENT_TURN['pick_up'].length; p++)
             {
                 if(CURRENT_TURN['pick_up'][p][1] == seat){
-                    el2.src = "pics/" + SHIP_PASSENGERS[seat] +".png"
+                    el2.src = "pics/" + PLANET_PASSENGERS[SPACESHIP_POSITION[0]][CURRENT_TURN['pick_up'][p][0]] +".png"
                     el2_container.classList = ["transparant"]
                 }
-                //SHIP_PASSENGERS[CURRENT_TURN['pick_up'][p][1]] = PLANET_PASSENGERS[SPACESHIP_POSITION[0]][CURRENT_TURN['pick_up'][p][0]]
-                //PLANET_PASSENGERS[SPACESHIP_POSITION[0]].splice(CURRENT_TURN['pick_up'][p][0], 1)
             }
         }
     }
