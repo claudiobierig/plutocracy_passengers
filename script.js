@@ -19,6 +19,8 @@ const NEPTUN_POSITIONS = [
 const PLANETS = [EARTH_POSITIONS, MARS_POSITIONS, JUPITER_POSITIONS, SATURN_POSITIONS, URANUS_POSITIONS, NEPTUN_POSITIONS]
 const TU_POSITIONS = [[1,258.4],[1,235],[1,211.6],[1,188.2],[1,164.8],[1,141.4],[1,118],[1,94.6],[1,71.2],[1,47.8],[1,24.4],[1,1],[24.4,1],[47.8,1],[71.2,1],[94.6,1],[118,1],[141.4,1],[164.8,1],[188.2,1],[211.6,1],[235,1],[258.4,1],[281.8,1],[305.2,1],[328.6,1],[352,1],[375.4,1],[398.8,1],[422.2,1],[445.6,1],[469,1],[492.4,1],[515.8,1],[539.2,1],[562.6,1],[586,1],[609.4,1],[632.8,1],[656.2,1],[679.6,1],[679.6,24.4],[679.6,47.8],[679.6,71.2],[679.6,94.6],[679.6,118],[679.6,141.4],[679.6,164.8],[679.6,188.2],[679.6,211.6],[679.6,235],[679.6,258.4],[679.6,281.8],[679.6,305.2],[679.6,328.6],[679.6,352],[679.6,375.4],[679.6,398.8],[679.6,422.2],[679.6,445.6],[679.6,469],[656.2,469],[632.8,469],[609.4,469],[586,469],[562.6,469],[539.2,469],[515.8,469],[492.4,469],[469,469],[445.6,469],[422.2,469],[398.8,469],[375.4,469],[352,469]];
 
+let EVENT_LISTENERS_CREATED = false
+
 /*
 const EARTH_COORDS = [[0, -2], [0, 2]]
 const MARS_COORDS = [[-3, 4], [-3, -1], [5, -2]]
@@ -66,6 +68,7 @@ DISTANCES[0][1][0][0] = 8
 DISTANCES[0][0][2][0] = 9
 DISTANCES[2][0][0][0] = 9
 */
+
 const DISTANCES = [[[[2,8],[8,5,7],[9,9,7,5,9],[11,8,6,9,10,10,11],[12,12,8,7,10,13,12,11,12],[13,9,7,9,12,14,13,13,12,13,13]],[[8,2],[5,8,7],[4,8,9,9,9],[11,11,10,10,10,6,7],[11,12,12,11,12,13,10,7,8],[13,13,11,13,13,14,12,9,8,9,13]]],[[[8,5],[2,7,10],[6,5,8,11,12],[8,10,12,12,13,7,5],[8,10,11,13,14,16,13,8,6],[11,12,13,15,15,17,15,10,7,7,10]],[[5,8],[7,2,10],[10,8,4,8,12],[8,5,7,12,13,12,10],[11,9,6,8,13,16,14,13,11],[10,7,8,10,15,17,15,15,12,12,11]],[[7,7],[10,10,2],[7,13,12,7,4],[16,13,9,6,5,8,12],[16,17,13,10,8,8,7,9,12],[18,14,12,9,9,9,8,9,12,14,18]]],[[[9,4],[6,10,7],[2,9,11,10,8],[12,13,11,11,9,4,8],[12,13,14,12,13,12,9,5,7],[14,15,13,14,14,13,11,7,7,10,14]],[[9,8],[5,8,13],[9,2,7,12,15],[5,8,13,15,16,10,5],[5,8,10,14,16,19,16,10,7],[9,10,14,16,18,20,18,12,9,6,7]],[[7,9],[8,4,12],[11,7,2,10,14],[7,4,9,14,15,13,9],[10,7,5,9,15,18,15,14,11],[8,6,9,12,17,19,17,16,13,11,10]],[[5,9],[11,8,7],[10,12,10,2,8],[14,11,4,6,10,11,14],[15,15,10,5,7,12,12,12,15],[16,11,7,6,9,12,13,13,15,16,16]],[[9,9],[12,12,4],[8,15,14,8,2],[18,15,10,5,4,9,14],[18,19,14,11,7,6,6,10,13],[20,15,13,10,8,7,7,10,13,16,20]]],[[[11,11],[8,8,16],[12,5,7,14,18],[2,8,13,18,19,13,8],[5,5,10,14,19,22,19,13,10],[6,10,14,16,21,23,21,15,12,8,5]],[[8,11],[10,5,13],[13,8,4,11,15],[8,2,10,15,16,15,11],[11,6,4,10,16,19,17,16,13],[7,4,8,13,18,20,18,18,15,12,11]],[[6,10],[12,7,9],[11,13,9,4,10],[13,10,2,7,12,12,15],[16,14,9,3,8,14,14,13,16],[15,10,5,5,10,14,15,15,16,17,16]],[[9,10],[12,12,6],[11,15,14,6,5],[18,15,7,2,7,12,15],[18,19,14,8,4,9,9,13,16],[20,15,10,7,5,9,10,13,16,17,20]],[[10,10],[13,13,5],[9,16,15,10,4],[19,16,12,7,2,8,15],[19,20,16,13,8,5,4,9,14],[21,17,15,12,9,6,5,9,12,17,21]],[[10,6],[7,12,8],[4,10,13,11,9],[13,15,12,12,8,2,9],[13,15,16,13,14,11,8,3,8],[16,17,15,15,15,12,10,5,6,11,15]],[[11,7],[5,10,12],[8,5,9,14,14],[8,11,15,15,15,9,2],[6,11,12,16,17,18,15,9,4],[12,13,16,18,18,19,17,11,6,4,8]]],[[[12,11],[8,11,16],[12,5,10,15,18],[5,11,16,18,19,13,6],[2,8,13,17,19,22,19,13,7],[9,13,17,19,21,23,21,15,9,5,4]],[[12,12],[10,9,17],[13,8,7,15,19],[5,6,14,19,20,15,11],[8,2,8,14,20,23,20,16,13],[3,8,12,17,22,24,22,18,15,11,7]],[[8,12],[11,6,13],[14,10,5,10,14],[10,4,9,14,16,16,12],[13,8,2,9,15,18,18,17,14],[8,3,7,12,17,19,19,19,16,14,13]],[[7,11],[13,8,10],[12,14,9,5,11],[14,10,3,8,13,13,16],[17,14,9,2,8,15,15,14,17],[15,10,4,5,10,15,16,16,17,18,17]],[[10,12],[14,13,8],[13,16,15,7,7],[19,16,8,4,8,14,17],[19,20,15,8,2,10,10,15,18],[21,16,10,6,4,10,11,15,18,19,21]],[[13,13],[16,16,8],[12,19,18,12,6],[22,19,14,9,5,11,18],[22,23,18,15,10,2,5,11,17],[24,19,17,14,9,3,4,10,15,20,24]],[[12,10],[13,14,7],[9,16,15,12,6],[19,17,14,9,4,8,15],[19,20,18,15,10,5,2,8,14],[21,19,17,14,11,6,4,7,12,17,21]],[[11,7],[8,13,9],[5,10,14,12,10],[13,16,13,13,9,3,9],[13,16,17,14,15,11,8,2,8],[17,18,16,16,16,12,10,4,6,11,15]],[[12,8],[6,11,12],[7,7,11,15,13],[10,13,16,16,14,8,4],[7,13,14,17,18,17,14,8,2],[14,15,17,19,19,18,16,10,4,5,9]]],[[[13,13],[11,10,18],[14,9,8,16,20],[6,7,15,20,21,16,12],[9,3,8,15,21,24,21,17,14],[2,8,13,18,23,25,23,19,16,12,7]],[[9,13],[12,7,14],[15,10,6,11,15],[10,4,10,15,17,17,13],[13,8,3,10,16,19,19,18,15],[8,2,8,13,18,20,20,20,17,14,13]],[[7,11],[13,8,12],[13,14,9,7,13],[14,8,5,10,15,15,16],[17,12,7,4,10,17,17,16,17],[13,8,2,7,12,17,18,18,17,18,17]],[[9,13],[15,10,9],[14,16,12,6,10],[16,13,5,7,12,15,18],[19,17,12,5,6,14,14,16,19],[18,13,7,2,7,14,15,16,19,20,19]],[[12,13],[15,15,9],[14,18,17,9,8],[21,18,10,5,9,15,18],[21,22,17,10,4,9,11,16,19],[23,18,12,7,2,9,10,16,19,20,23]],[[14,14],[17,17,9],[13,20,19,12,7],[23,20,14,9,6,12,19],[23,24,19,15,10,3,6,12,18],[25,20,17,14,9,2,5,11,16,21,25]],[[13,12],[15,15,8],[11,18,17,13,7],[21,18,15,10,5,10,17],[21,22,19,16,11,4,4,10,16],[23,20,18,15,10,5,2,8,14,19,23]],[[13,9],[10,15,9],[7,12,16,13,10],[15,18,15,13,9,5,11],[15,18,19,16,15,10,7,4,10],[19,20,18,16,16,11,8,2,8,13,17]],[[12,8],[7,12,12],[7,9,13,15,13],[12,15,16,16,12,6,6],[9,15,16,17,18,15,12,6,4],[16,17,17,19,19,16,14,8,2,7,11]],[[13,9],[7,12,14],[10,6,11,16,16],[8,12,17,17,17,11,4],[5,11,14,18,19,20,17,11,5],[12,14,18,20,20,21,19,13,7,2,7]],[[13,13],[10,11,18],[14,7,10,16,20],[5,11,16,20,21,15,8],[4,7,13,17,21,24,21,15,9],[7,13,17,19,23,25,23,17,11,7,2]]]]
 
 
@@ -106,8 +109,10 @@ function onClickTimeSpace(tu)
     {
         return
     }
-    //TODO compute minimal time from position and CURRENT_TURN['destination']
-    let minimal_time = TIME_SPENT[0] + 5
+    let minimal_time = TIME_SPENT[0]
+    if(CURRENT_TURN.hasOwnProperty('destination')){
+        minimal_time += DISTANCES[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][CURRENT_TURN['destination'][0]][CURRENT_TURN['destination'][1]]
+    }
     let arrival_time = tu
     while(arrival_time < minimal_time){
         arrival_time += 75
@@ -160,10 +165,12 @@ function onClickPlanetPassenger(planet, number)
         if(CURRENT_TURN['active_passenger'] == number)
         {
             delete CURRENT_TURN.active_passenger
+            refreshUI()
             return
         }
     }
     CURRENT_TURN['active_passenger'] = number
+    refreshUI()
 }
 
 function onClickShipPassenger(seat)
@@ -223,9 +230,7 @@ function end_turn()
                     PLANET_PASSENGERS[SPACESHIP_POSITION[0]][CURRENT_TURN['pick_up'][p][0]] = 0
                 }
                 let new_passengers = PLANET_PASSENGERS[SPACESHIP_POSITION[0]].filter(function(p){
-                    return !CURRENT_TURN['pick_up'].some(function(pick){
-                        return p==pick[0]
-                    })
+                    return p != 0
                 })
                 PLANET_PASSENGERS[SPACESHIP_POSITION[0]] = new_passengers
             }
@@ -437,8 +442,10 @@ function createTimeSpaces()
         let position = getPosition(i)
         newDiv.className = 'square';
         newDiv.id = 'TU_' + i
-        newDiv.addEventListener('click', function(){
-            onClickTimeSpace(i)});
+        if(!EVENT_LISTENERS_CREATED){
+            newDiv.addEventListener('click', function(){
+                onClickTimeSpace(i)});
+        }
         newDiv.style.left = position[0] + MAINBOARD_OFFSET[0] + 'px'
         newDiv.style.top = position[1] + MAINBOARD_OFFSET[1] + 'px'
         container.appendChild(newDiv);
@@ -454,8 +461,10 @@ function createHexSpaces()
             let position = PLANETS[planet][i]
             newDiv.className = 'hex';
             newDiv.id = 'Planet_' + planet + "_" + i
-            newDiv.addEventListener('click', function(){
-                onClickHex(planet, i)});
+            if(!EVENT_LISTENERS_CREATED){
+                newDiv.addEventListener('click', function(){
+                    onClickHex(planet, i)});
+            }
             newDiv.style.left = position[0] + MAINBOARD_OFFSET[0] + 'px'
             newDiv.style.top = position[1] + MAINBOARD_OFFSET[1] + 'px'
             container.appendChild(newDiv);
@@ -472,8 +481,10 @@ function createPlanetPassengers()
             el.id = 'Passenger_' + i + '_Planet_' + planet
             el.style.width = "70px"
             el.style.display = 'none'
-            el.addEventListener('click', function(){
-                onClickPlanetPassenger(planet, i)});
+            if(!EVENT_LISTENERS_CREATED){
+                el.addEventListener('click', function(){
+                    onClickPlanetPassenger(planet, i)});
+            }
             el.src = "pics/back.jpg"
             container.appendChild(el);
         }
@@ -536,16 +547,6 @@ function setup(seed, difficulty)
     shuffle(PASSENGER_DECK);
     perform_passenger_event()
     refreshUI()
-}
-
-
-function handleMouseClick(event) {
-    // Get the mouse coordinates
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
-
-    // Log the coordinates to the console (you can use them as needed)
-    console.log(`Mouse Click Position: X=${mouseX}, Y=${mouseY}`);
 }
 
 function setPosition(element_id, position)
@@ -616,9 +617,11 @@ function setPositionFixedElements()
             ]
         )
         el2.src = "pics/" + SHIP_PASSENGERS[seat] +".png"
-        el2.addEventListener('click', function(){
-            onClickShipPassenger(seat)
-        })
+        if(!EVENT_LISTENERS_CREATED){
+            el2.addEventListener('click', function(){
+                onClickShipPassenger(seat)
+            })
+        }
         if(CURRENT_TURN.hasOwnProperty('pick_up'))
         {
             for(let p=0; p <CURRENT_TURN['pick_up'].length; p++)
@@ -640,8 +643,10 @@ function makePlanetsClickable()
     let planet_markers = ['earth_marker', 'mars_marker', 'jupiter_marker', 'saturn_marker', 'uranus_marker', 'neptun_marker']
     for(let marker=0;marker<planet_markers.length;marker++){
         let el = document.getElementById(planet_markers[marker])
-        el.addEventListener('click', function(){
-            onClickPlanet(marker)})
+        if(!EVENT_LISTENERS_CREATED){
+            el.addEventListener('click', function(){
+                onClickPlanet(marker)})
+        }
     }
     
 }
@@ -649,6 +654,8 @@ function makePlanetsClickable()
 
 function refreshUI()
 {
+    console.log("refreshUI")
+    console.log(Date.now())
     getImagePosition()
     setPositionFixedElements()
     let planet_markers = ['earth_marker', 'mars_marker', 'jupiter_marker', 'saturn_marker', 'uranus_marker', 'neptun_marker']
@@ -689,7 +696,7 @@ function refreshUI()
     }
 
     moveTimeMarkers()
-    console.log(CURRENT_TURN)
+    console.log(Date.now())
 }
 
 function handleResize() {
@@ -705,7 +712,8 @@ window.onload = function () {
     createPlanetPassengers()
     setup('holymoly', 120)
     refreshUI()
+    EVENT_LISTENERS_CREATED = true
     setNextTurnType()
 };
-document.addEventListener('click', handleMouseClick);//TODO remove + remove handleMouseClick
+
 window.addEventListener('resize', handleResize);

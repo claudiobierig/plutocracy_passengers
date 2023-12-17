@@ -2,9 +2,10 @@
 
 - Logic
   - handling loosing/winning
-  - taking a passenger
+  - handling setup
 
 - Extra Features after everything works
+  - refactor
   - make look nice
     - buttons
     - clickable areas
@@ -26,3 +27,6 @@
     - difficulty
     - seed
     - starting position
+
+- Bugs
+  - bug 0.png at planet, probably fixed
