@@ -2,12 +2,13 @@
 
 - Logic
   - handling loosing/winning
-  - handling setup
 
 - Extra Features after everything works
   - refactor
+  - additional starting positions
   - make look nice
     - buttons
+    - handling of picking up passengers
     - clickable areas
     - handle image of screen correctly when refreshing ui
     - fix window size?
@@ -19,14 +20,11 @@
     - show stack sizes
   - Rules link
   - Highscore
-  - helper text
+  - helper text (especially for first turn)
   - show events happening
   - show warning if we are travelling for too long
   - show history
-  - start game
-    - difficulty
-    - seed
-    - starting position
 
 - Bugs
   - bug 0.png at planet, probably fixed
+  - new game, discard pile not set correctly when no card is there

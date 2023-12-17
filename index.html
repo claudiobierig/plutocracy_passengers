@@ -43,14 +43,69 @@
         <div id="seat_2_container" class="full"><img id="seat_2" src="pics/0.png" alt="seat_2" width="70px" position="absolute" style="display: none;"></div>
         <div id="seat_3_container" class="full"><img id="seat_3" src="pics/0.png" alt="seat_3" width="70px" position="absolute" style="display: none;"></div>
 
-        <button id="reset_turn" onclick="reset_turn()" style="display: none;">Reset Turn</button>
-        <button id="end_turn" onclick="end_turn()" style="display: none;">End Turn</button>
+        <button id="new_game" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#new_game_modal">New Game</button>
+        <button id="reset_turn" type="button" class="btn btn-primary" onclick="reset_turn()" style="display: none;">Reset Turn</button>
+        <button id="end_turn" type="button" class="btn btn-primary" onclick="end_turn()" style="display: none;">End Turn</button>
+
+        <div class="modal fade" id="new_game_modal" tabindex="-1" aria-labelledby="start_new_game_modal_title" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="start_new_game_modal_title">Start New Game</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="new_game_settings">
+                        <div class="mb-3">
+                            <label for="Difficulty" class="form-label">Difficulty</label>
+                            <select class="form-select" id="Difficulty">
+                                <option value="100">Easy</option>
+                                <option value="120">Normal</option>
+                                <option value="140">Hard</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="StartPosition" class="form-label">Start Position</label>
+                            <select class="form-select" id="StartPosition">
+                                <option value="Standard">Standard</option>
+                                <option value="Random">Random</option>
+                                <option value="Carina">Carina</option>
+                                <option value="Ursa Major">Ursa Major</option>
+                                <option value="Ophiuchus">Ophiuchus</option>
+                                <option value="Perseus">Perseus</option>
+                                <option value="Cygnus">Cygnus</option>
+                                <option value="Pegasus">Pegasus</option>
+                                <option value="Canis Major">Canis Major</option>
+                                <option value="Auriga">Auriga</option>
+                                <option value="Leo">Leo</option>
+                                <option value="Vela">Vela</option>
+                                <option value="Orion">Orion</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="fixSeed">
+                            <label class="form-check-label" for="fixSeed">Fix Input</label>
+                        </div>
+                        <div class="mb-3" id="fixSeedInputContainer" style="display: none;">
+                            <label for="seedInput" class="form-label">Hidden Input</label>
+                            <input type="text" class="form-control" id="seedInput">
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="new_game()">New Game</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 
 
 
     <!-- Add links to your JavaScript files here -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
     <script src="script.js"></script>

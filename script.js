@@ -255,6 +255,17 @@ function end_turn()
     refreshUI()    
 }
 
+function new_game()
+{
+    let difficulty = parseInt(document.getElementById('Difficulty').value);
+    let starting_position = document.getElementById('StartPosition').value;
+    let seed = Date.now()
+    if(document.getElementById('fixSeed').checked){
+        seed = document.getElementById('seedInput').value;
+    }
+    setup(seed, difficulty, starting_position)
+}
+
 function setNextTurnType()
 {
     if(SPACESHIP_POSITION.length == 0){
@@ -524,18 +535,47 @@ function moveMarkerToTu(marker_name, tu)
     return time_marker
 }
 
-function setup(seed, difficulty)
+function get_starting_planet_positions(starting_position)
 {
+    const options = {
+        'Standard': [0, 0, 0, 0, 0, 0],
+        'Carina': [0, 0, 2, 6, 1, 4],
+        'Ursa Major': [0, 2, 3, 3, 2, 0],
+        'Ophiuchus': [1, 0, 4, 1, 4, 2],
+        'Perseus': [1, 2, 3, 2, 7, 7],
+        'Cygnus': [1, 0, 2, 3, 7, 7],
+        'Pegasus': [1, 0, 1, 4, 7, 8],
+        'Canis Major': [1, 0, 0, 2, 4, 4],
+        'Auriga': [0, 1, 3, 6, 6, 7],
+        'Leo': [1, 0, 0, 6, 4, 5],
+        'Vela': [1, 0, 0, 6, 3, 4],
+        'Orion': [0, 1, 0, 6, 2, 3]
+    }
+
+    if(options.hasOwnProperty(starting_position)){
+        return options[starting_position]
+    }
+    let planet_positions = []
+    for(let planet=0; planet<PLANETS.length; planet++){
+        planet_positions.push((Math.floor(Math.random() * 12) + 1) % PLANETS[planet].length)
+    }
+    return planet_positions
+}
+
+function setup(seed, difficulty, starting_position)
+{
+    Math.seedrandom(seed);
+    CURRENT_PLANET_POSITIONS = get_starting_planet_positions(starting_position)
     HISTORY = []
     HISTORY.push({
         'seed': seed,
-        'difficulty': difficulty
+        'difficulty': difficulty,
+        'starting_position': CURRENT_PLANET_POSITIONS
     })
     END_EVENT = [difficulty, 0]
     NEXT_TURN_TYPE = CHOOSE_STARTING_POSITION
     SPACESHIP_POSITION = []
     TIME_SPENT = [0,0]
-    CURRENT_PLANET_POSITIONS = [0, 0, 0, 0, 0, 0]
     NEXT_ROTATE_EVENT = [10, 0]
     NEXT_PASSENGER_EVENT = [0, 0]
     PASSENGER_DECK = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
@@ -543,7 +583,6 @@ function setup(seed, difficulty)
     PLANET_PASSENGERS = [[], [], [], [], [], []]
     SHIP_PASSENGERS = [0, 0, 0, 0]
     CURRENT_TURN = {}
-    Math.seedrandom(seed);
     shuffle(PASSENGER_DECK);
     perform_passenger_event()
     refreshUI()
@@ -634,6 +673,7 @@ function setPositionFixedElements()
         }
     }
 
+    setPosition('new_game', [DISCARD_PILE_OFFSET[0], SHIP_OFFSET[1] - 50])
     setPosition('reset_turn', [DISCARD_PILE_OFFSET[0], SHIP_OFFSET[1]])
     setPosition('end_turn', [DISCARD_PILE_OFFSET[0], SHIP_OFFSET[1] + 50])
 }
@@ -650,12 +690,15 @@ function makePlanetsClickable()
     }
     
 }
-    
+
+document.getElementById('fixSeed').addEventListener('change', function() {
+    var fixSeedInputContainer = document.getElementById('fixSeedInputContainer');
+    fixSeedInputContainer.style.display = this.checked ? 'block' : 'none';
+});
+
 
 function refreshUI()
 {
-    console.log("refreshUI")
-    console.log(Date.now())
     getImagePosition()
     setPositionFixedElements()
     let planet_markers = ['earth_marker', 'mars_marker', 'jupiter_marker', 'saturn_marker', 'uranus_marker', 'neptun_marker']
@@ -696,7 +739,6 @@ function refreshUI()
     }
 
     moveTimeMarkers()
-    console.log(Date.now())
 }
 
 function handleResize() {
@@ -710,7 +752,7 @@ window.onload = function () {
     createHexSpaces()
     makePlanetsClickable()
     createPlanetPassengers()
-    setup('holymoly', 120)
+    setup('holymoly', 120, 'Standard')
     refreshUI()
     EVENT_LISTENERS_CREATED = true
     setNextTurnType()
