@@ -19,3 +19,6 @@
 - Highscore
 - show warning if we are travelling for too long
 - show history
+
+- Bugs
+  - lost Mars 1st class. only 17 cards at the end
