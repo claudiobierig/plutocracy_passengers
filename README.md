@@ -1,22 +1,21 @@
 # TODOs
 
-- Extra Features after everything works
-  - refactor
-  - make look nice
-    - buttons
-    - handling of picking up passengers
-    - clickable areas
-    - handle image of screen correctly when refreshing ui
-    - fix window size?
-    - mark 1st class seats
-    - win/loose
-  - add convenience stuff
-    - show distance from ship position
-    - show discard pile on mouseover
-    - show draw pile on mouseover
-    - show stack sizes
-  - Rules link
-  - Highscore
+- refactor
+- make look nice
+  - buttons
+  - handling of picking up passengers
+  - clickable areas
+  - handle image of screen correctly when refreshing ui
+  - fix window size? mobile?
+  - mark 1st class seats
+  - win/loose
   - show events happening
-  - show warning if we are travelling for too long
-  - show history
+- add convenience stuff
+  - show distance from ship position
+  - show discard pile on mouseover
+  - show draw pile on mouseover
+  - show stack sizes
+- Rule link
+- Highscore
+- show warning if we are travelling for too long
+- show history
