@@ -1,8 +1,7 @@
-# TODOs to complete implementation
+# TODOs
 
 - Extra Features after everything works
   - refactor
-  - additional starting positions
   - make look nice
     - buttons
     - handling of picking up passengers
@@ -10,6 +9,7 @@
     - handle image of screen correctly when refreshing ui
     - fix window size?
     - mark 1st class seats
+    - win/loose
   - add convenience stuff
     - show distance from ship position
     - show discard pile on mouseover
@@ -17,7 +17,6 @@
     - show stack sizes
   - Rules link
   - Highscore
-  - helper text (especially for first turn)
   - show events happening
   - show warning if we are travelling for too long
   - show history
