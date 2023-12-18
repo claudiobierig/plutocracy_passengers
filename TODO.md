@@ -1,8 +1,5 @@
 # TODOs to complete implementation
 
-- Logic
-  - handling loosing/winning
-
 - Extra Features after everything works
   - refactor
   - additional starting positions
@@ -24,7 +21,3 @@
   - show events happening
   - show warning if we are travelling for too long
   - show history
-
-- Bugs
-  - bug 0.png at planet, probably fixed
-  - new game, discard pile not set correctly when no card is there

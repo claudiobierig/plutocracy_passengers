@@ -19,6 +19,12 @@ const NEPTUN_POSITIONS = [
 const PLANETS = [EARTH_POSITIONS, MARS_POSITIONS, JUPITER_POSITIONS, SATURN_POSITIONS, URANUS_POSITIONS, NEPTUN_POSITIONS]
 const TU_POSITIONS = [[1,258.4],[1,235],[1,211.6],[1,188.2],[1,164.8],[1,141.4],[1,118],[1,94.6],[1,71.2],[1,47.8],[1,24.4],[1,1],[24.4,1],[47.8,1],[71.2,1],[94.6,1],[118,1],[141.4,1],[164.8,1],[188.2,1],[211.6,1],[235,1],[258.4,1],[281.8,1],[305.2,1],[328.6,1],[352,1],[375.4,1],[398.8,1],[422.2,1],[445.6,1],[469,1],[492.4,1],[515.8,1],[539.2,1],[562.6,1],[586,1],[609.4,1],[632.8,1],[656.2,1],[679.6,1],[679.6,24.4],[679.6,47.8],[679.6,71.2],[679.6,94.6],[679.6,118],[679.6,141.4],[679.6,164.8],[679.6,188.2],[679.6,211.6],[679.6,235],[679.6,258.4],[679.6,281.8],[679.6,305.2],[679.6,328.6],[679.6,352],[679.6,375.4],[679.6,398.8],[679.6,422.2],[679.6,445.6],[679.6,469],[656.2,469],[632.8,469],[609.4,469],[586,469],[562.6,469],[539.2,469],[515.8,469],[492.4,469],[469,469],[445.6,469],[422.2,469],[398.8,469],[375.4,469],[352,469]];
 
+const HELPER_TEXT_CHOOSE_STARTING_POSITION = `Pick your starting position by clicking on one of the planet positions.<br>
+Afterwards click on the End Turn button.`
+const HELPER_TEXT_PLAYER_TURN = `1) Pick up passengers.<br>
+2) Choose a destination.<br>
+3) If you want to spent additional TU, click on the corresponding space.`
+
 let EVENT_LISTENERS_CREATED = false
 
 /*
@@ -215,6 +221,7 @@ function end_turn()
         if(CURRENT_TURN.hasOwnProperty('destination')){
             
             SPACESHIP_POSITION = CURRENT_TURN['destination']
+            setHelperText(HELPER_TEXT_PLAYER_TURN)
         }
     }
     else if(NEXT_TURN_TYPE==PLAYER_TURN)
@@ -288,23 +295,38 @@ function setNextTurnType()
 
 function perform_next_turn()
 {
-    setNextTurnType()
-    if(NEXT_TURN_TYPE == ROTATION_TURN)
-    {
-        perform_rotation_event()
+    try{
+        setNextTurnType()
+        if(NEXT_TURN_TYPE == ROTATION_TURN)
+        {
+            perform_rotation_event()
+        }
+        else if(NEXT_TURN_TYPE == PASSENGER_TURN)
+        {
+            perform_passenger_event()
+        }
+        else if(NEXT_TURN_TYPE == END_TURN)
+        {
+            perform_end_event()
+        }
+        else if(NEXT_TURN_TYPE == PLAYER_TURN)
+        {
+            perform_player_turn()
+        }
     }
-    else if(NEXT_TURN_TYPE == PASSENGER_TURN)
+    catch(error)
     {
-        perform_passenger_event()
+        let el = document.getElementById('new_game_result')
+        el.innerHTML = error.message
+        el.style.display = 'block';
+        $('#new_game_modal').modal('show');
     }
-    else if(NEXT_TURN_TYPE == END_TURN)
-    {
-        perform_end_event()
-    }
-    else if(NEXT_TURN_TYPE == PLAYER_TURN)
-    {
-        perform_player_turn()
-    }
+}
+
+function setHelperText(message)
+{
+    let helper_div = document.getElementById("helper_text");
+    helper_div.innerHTML = message
 }
 
 function passenger_is_first_class(passenger){
@@ -549,7 +571,9 @@ function get_starting_planet_positions(starting_position)
         'Auriga': [0, 1, 3, 6, 6, 7],
         'Leo': [1, 0, 0, 6, 4, 5],
         'Vela': [1, 0, 0, 6, 3, 4],
-        'Orion': [0, 1, 0, 6, 2, 3]
+        'Orion': [0, 1, 0, 6, 2, 3],
+        'Ueberholmanoever': [1, 2, 4, 6, 0, 10],
+        'SehrSpaeteSchlange': [0, 0, 2, 5, 1, 2]
     }
 
     if(options.hasOwnProperty(starting_position)){
@@ -585,6 +609,7 @@ function setup(seed, difficulty, starting_position)
     CURRENT_TURN = {}
     shuffle(PASSENGER_DECK);
     perform_passenger_event()
+    setHelperText(HELPER_TEXT_CHOOSE_STARTING_POSITION)
     refreshUI()
 }
 
@@ -676,6 +701,8 @@ function setPositionFixedElements()
     setPosition('new_game', [DISCARD_PILE_OFFSET[0], SHIP_OFFSET[1] - 50])
     setPosition('reset_turn', [DISCARD_PILE_OFFSET[0], SHIP_OFFSET[1]])
     setPosition('end_turn', [DISCARD_PILE_OFFSET[0], SHIP_OFFSET[1] + 50])
+
+    setPosition('helper_text', [SHIP_OFFSET[0] + 330 , SHIP_OFFSET[1] -20])
 }
 
 function makePlanetsClickable()
@@ -721,7 +748,7 @@ function refreshUI()
     let drawing_pile = document.getElementById('drawing_pile')
     if(PASSENGER_DECK.length == 0)
     {
-        drawing_pile.src = "pics/empty.png"
+        drawing_pile.src = "pics/0.png"
     }
     else
     {
@@ -731,7 +758,7 @@ function refreshUI()
     let discard_pile = document.getElementById('discard_pile')
     if(DISCARD_PILE.length == 0)
     {
-        discard_pile.src = "pics/empty.png"
+        discard_pile.src = "pics/0.png"
     }
     else
     {

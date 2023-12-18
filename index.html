@@ -47,6 +47,8 @@
         <button id="reset_turn" type="button" class="btn btn-primary" onclick="reset_turn()" style="display: none;">Reset Turn</button>
         <button id="end_turn" type="button" class="btn btn-primary" onclick="end_turn()" style="display: none;">End Turn</button>
 
+        <div id="helper_text" style="color: red; max-width: 350px;">Pick your starting position</div>
+
         <div class="modal fade" id="new_game_modal" tabindex="-1" aria-labelledby="start_new_game_modal_title" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -55,6 +57,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="mb-3" id="new_game_result" style="display: none;"></div>
                     <form id="new_game_settings">
                         <div class="mb-3">
                             <label for="Difficulty" class="form-label">Difficulty</label>
@@ -69,6 +72,9 @@
                             <select class="form-select" id="StartPosition">
                                 <option value="Standard">Standard</option>
                                 <option value="Random">Random</option>
+                                <option value="Orion">Orion</option>
+                                <option value="Ueberholmanoever">Ueberholmanoever</option>
+                                <option value="SehrSpaeteSchlange">Sehr spaete Schlange</option>
                                 <option value="Carina">Carina</option>
                                 <option value="Ursa Major">Ursa Major</option>
                                 <option value="Ophiuchus">Ophiuchus</option>
@@ -79,7 +85,6 @@
                                 <option value="Auriga">Auriga</option>
                                 <option value="Leo">Leo</option>
                                 <option value="Vela">Vela</option>
-                                <option value="Orion">Orion</option>
                             </select>
                         </div>
                         <div class="mb-3 form-check">
@@ -90,7 +95,7 @@
                             <label for="seedInput" class="form-label">Hidden Input</label>
                             <input type="text" class="form-control" id="seedInput">
                         </div>
-                        <button type="button" class="btn btn-primary" onclick="new_game()">New Game</button>
+                        <button type="button" class="btn btn-primary" onclick="new_game()" data-bs-dismiss="modal">New Game</button>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -108,6 +113,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script>
     
 </body>
