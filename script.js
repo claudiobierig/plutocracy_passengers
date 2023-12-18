@@ -779,7 +779,7 @@ window.onload = function () {
     createHexSpaces()
     makePlanetsClickable()
     createPlanetPassengers()
-    setup('holymoly', 120, 'Standard')
+    setup(Date.now(), 120, 'Standard')
     refreshUI()
     EVENT_LISTENERS_CREATED = true
     setNextTurnType()
