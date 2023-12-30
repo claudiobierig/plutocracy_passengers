@@ -109,11 +109,11 @@ let HISTORY = []
 function onClickTimeSpace(tu)
 {
     if(NEXT_TURN_TYPE != PLAYER_TURN){
-        return
+        return 0
     }
     if(!CURRENT_TURN.hasOwnProperty('destination'))
     {
-        return
+        return 1
     }
     let minimal_time = TIME_SPENT[0]
     if(CURRENT_TURN.hasOwnProperty('destination')){
@@ -125,6 +125,7 @@ function onClickTimeSpace(tu)
     }
     CURRENT_TURN['arrival_time'] = arrival_time
     refreshUI()
+    return arrival_time
 }
 
 function onClickPlanet(planet){

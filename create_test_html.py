@@ -7,11 +7,7 @@ with open("index.html") as inf:
     soup = bs4.BeautifulSoup(txt)
 
 qunit_css = soup.new_tag("link", rel="stylesheet", href="https://code.jquery.com/qunit/qunit-2.20.0.css")
-#soup.head.append(qunit_css)
-style = soup.find("link", href="styles.css")
-style['rel'] = "stylesheet"
-style['href'] = "https://code.jquery.com/qunit/qunit-2.20.0.css"
-
+soup.head.append(qunit_css)
 root = soup.find("div", id="root")
 root['style'] = "display: none;"
 
