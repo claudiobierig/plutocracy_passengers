@@ -21,4 +21,3 @@
 - show history
 
 - Bugs
-  - lost Mars 1st class. only 17 cards at the end

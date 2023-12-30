@@ -187,10 +187,12 @@ function onClickShipPassenger(seat)
     if(SHIP_PASSENGERS[seat] != 0){
         return
     }
-    /*if(CURRENT_TURN.hasOwnProperty('pick_up')){
+    /*
+    if(CURRENT_TURN.hasOwnProperty('pick_up')){
         for(let p=0; p<CURRENT_TURN['pick_up'].length; p++){
             if(CURRENT_TURN['pick_up'][p][1] == seat){
-                CURRENT_TURN['pick_up'].splice(p, 1)
+                CURRENT_TURN['pick_up'].pop(p)
+                break
             }
         }
     }*/
@@ -203,7 +205,16 @@ function onClickShipPassenger(seat)
         if(! CURRENT_TURN.hasOwnProperty('pick_up')){
             CURRENT_TURN['pick_up'] = []
         }
+
+        for(let p=0; p<CURRENT_TURN['pick_up'].length; p++){
+            if(CURRENT_TURN['pick_up'][p][1] == seat)
+            {
+                CURRENT_TURN['pick_up'].pop(p)
+                break
+            }
+        }
         CURRENT_TURN['pick_up'].push([CURRENT_TURN['active_passenger'], seat])
+        
         delete CURRENT_TURN.active_passenger
     }
     refreshUI()
