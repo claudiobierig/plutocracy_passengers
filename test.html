@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Plutocracy Passengers
+  </title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://code.jquery.com/qunit/qunit-2.20.0.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <div id="root" position="relative" style="display: none;">
+   <img alt="mainboard" height="776px" id="mainboard" position="absolute" src="pics/main_image.png" width="841px"/>
+   <div id="clickable_areas">
+   </div>
+   <img alt="earth_marker" id="earth_marker" position="absolute" src="pics/planet_grey.png" style="display: none;" width="30px"/>
+   <img alt="mars_marker" id="mars_marker" position="absolute" src="pics/planet_red.png" style="display: none;" width="30px"/>
+   <img alt="jupiter_marker" id="jupiter_marker" position="absolute" src="pics/planet_orange.png" style="display: none;" width="30px"/>
+   <img alt="saturn_marker" id="saturn_marker" position="absolute" src="pics/planet_yellow.png" style="display: none;" width="30px"/>
+   <img alt="uranus_marker" id="uranus_marker" position="absolute" src="pics/planet_green.png" style="display: none;" width="30px"/>
+   <img alt="neptun_marker" id="neptun_marker" position="absolute" src="pics/planet_blue.png" style="display: none;" width="30px"/>
+   <div id="tu_markers">
+    <img alt="time_marker" id="time_marker" position="absolute" src="pics/time_pink.png" style="display: none;" width="22px"/>
+    <img alt="rotate_marker" id="rotate_marker" position="absolute" src="pics/Event_Rotate.png" style="display: none;" width="22px"/>
+    <img alt="passenger_marker" id="passenger_marker" position="absolute" src="pics/Event_Prices.png" style="display: none;" width="22px"/>
+    <img alt="end_marker" id="end_marker" position="absolute" src="pics/Event_End.png" style="display: none;" width="22px"/>
+   </div>
+   <img alt="ship_marker" id="ship_marker" position="absolute" src="pics/ship_pink.png" style="display: none;" width="22px"/>
+   <img alt="drawing_pile" id="drawing_pile" position="absolute" src="pics/back.png" style="display: none;" width="70px"/>
+   <img alt="discard_pile" id="discard_pile" position="absolute" src="pics/empty.png" style="display: none;" width="70px"/>
+   <img alt="marker_0" id="marker_0" position="absolute" src="pics/councilor_pink_large.png" style="display: none;" width="10px"/>
+   <img alt="marker_1" id="marker_1" position="absolute" src="pics/councilor_pink_large.png" style="display: none;" width="10px"/>
+   <img alt="marker_2" id="marker_2" position="absolute" src="pics/councilor_pink.png" style="display: none;" width="10px"/>
+   <img alt="marker_3" id="marker_3" position="absolute" src="pics/councilor_pink.png" style="display: none;" width="10px"/>
+   <div class="full" id="seat_0_container">
+    <img alt="seat_0" id="seat_0" position="absolute" src="pics/0.png" style="display: none;" width="70px"/>
+   </div>
+   <div class="full" id="seat_1_container">
+    <img alt="seat_1" id="seat_1" position="absolute" src="pics/0.png" style="display: none;" width="70px"/>
+   </div>
+   <div class="full" id="seat_2_container">
+    <img alt="seat_2" id="seat_2" position="absolute" src="pics/0.png" style="display: none;" width="70px"/>
+   </div>
+   <div class="full" id="seat_3_container">
+    <img alt="seat_3" id="seat_3" position="absolute" src="pics/0.png" style="display: none;" width="70px"/>
+   </div>
+   <button class="btn btn-primary" data-bs-target="#new_game_modal" data-bs-toggle="modal" id="new_game" type="button">
+    New Game
+   </button>
+   <button class="btn btn-primary" id="reset_turn" onclick="reset_turn()" style="display: none;" type="button">
+    Reset Turn
+   </button>
+   <button class="btn btn-primary" id="end_turn" onclick="end_turn()" style="display: none;" type="button">
+    End Turn
+   </button>
+   <div id="helper_text" style="color: red; max-width: 350px;">
+    Pick your starting position
+   </div>
+   <div aria-hidden="true" aria-labelledby="start_new_game_modal_title" class="modal fade" id="new_game_modal" tabindex="-1">
+    <div class="modal-dialog">
+     <div class="modal-content">
+      <div class="modal-header">
+       <h5 class="modal-title" id="start_new_game_modal_title">
+        Start New Game
+       </h5>
+       <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button">
+       </button>
+      </div>
+      <div class="modal-body">
+       <div class="mb-3" id="new_game_result" style="display: none;">
+       </div>
+       <form id="new_game_settings">
+        <div class="mb-3">
+         <label class="form-label" for="Difficulty">
+          Difficulty
+         </label>
+         <select class="form-select" id="Difficulty">
+          <option value="100">
+           Easy
+          </option>
+          <option value="120">
+           Normal
+          </option>
+          <option value="140">
+           Hard
+          </option>
+         </select>
+        </div>
+        <div class="mb-3">
+         <label class="form-label" for="StartPosition">
+          Start Position
+         </label>
+         <select class="form-select" id="StartPosition">
+          <option value="Standard">
+           Standard
+          </option>
+          <option value="Random">
+           Random
+          </option>
+          <option value="Orion">
+           Orion
+          </option>
+          <option value="Ueberholmanoever">
+           Ueberholmanoever
+          </option>
+          <option value="SehrSpaeteSchlange">
+           Sehr spaete Schlange
+          </option>
+          <option value="Carina">
+           Carina
+          </option>
+          <option value="Ursa Major">
+           Ursa Major
+          </option>
+          <option value="Ophiuchus">
+           Ophiuchus
+          </option>
+          <option value="Perseus">
+           Perseus
+          </option>
+          <option value="Cygnus">
+           Cygnus
+          </option>
+          <option value="Pegasus">
+           Pegasus
+          </option>
+          <option value="Canis Major">
+           Canis Major
+          </option>
+          <option value="Auriga">
+           Auriga
+          </option>
+          <option value="Leo">
+           Leo
+          </option>
+          <option value="Vela">
+           Vela
+          </option>
+         </select>
+        </div>
+        <div class="mb-3 form-check">
+         <input class="form-check-input" id="fixSeed" type="checkbox"/>
+         <label class="form-check-label" for="fixSeed">
+          Fix Input
+         </label>
+        </div>
+        <div class="mb-3" id="fixSeedInputContainer" style="display: none;">
+         <label class="form-label" for="seedInput">
+          Hidden Input
+         </label>
+         <input class="form-control" id="seedInput" type="text"/>
+        </div>
+        <button class="btn btn-primary" data-bs-dismiss="modal" onclick="new_game()" type="button">
+         New Game
+        </button>
+       </form>
+      </div>
+      <div class="modal-footer">
+       <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">
+        Close
+       </button>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <!-- Add links to your JavaScript files here -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap/dist/js/bootstrap.bundle.min.js">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js">
+  </script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js">
+  </script>
+  <script src="script.js">
+  </script>
+  <div id="qunit">
+  </div>
+  <div id="qunit-fixture">
+  </div>
+  <script src="https://code.jquery.com/qunit/qunit-2.20.0.js">
+  </script>
+  <script src="tests.js">
+  </script>
+ </body>
+</html>
