@@ -658,11 +658,28 @@ function setPositionFixedElements()
             passenger = setPosition('Passenger_' + i + '_Planet_' + planet, position)
             if(i<PLANET_PASSENGERS[planet].length){
                 passenger.src = "pics/" + PLANET_PASSENGERS[planet][i] + ".png"
+                passenger.style.opacity = 1
             }
             else
             {
                 passenger.style.display = "none"
             }
+            if(CURRENT_TURN.hasOwnProperty('pick_up'))
+            {
+                for(let p=0; p <CURRENT_TURN['pick_up'].length; p++)
+                {
+                    if(CURRENT_TURN['pick_up'][p][1] == i && SPACESHIP_POSITION[0] == planet){
+                        passenger.style.opacity = 0.5
+                    }
+                }
+            }
+            if(CURRENT_TURN.hasOwnProperty('active_passenger'))
+            {
+                if(CURRENT_TURN['active_passenger'] == i && SPACESHIP_POSITION[0] == planet){
+                        passenger.style.opacity = 0.5
+                }
+            }
+
         }
     }
     if(CURRENT_TURN.hasOwnProperty('destination')){
