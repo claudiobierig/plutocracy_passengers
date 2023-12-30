@@ -1,8 +1,8 @@
 {
     "scripts": {
-        "test": "node qunit-tests.js",
+        "test": "node qunit-tests.js"
     },
     "devDependencies": {
-        "node-qunit-puppeteer": "^2.1.2",
+        "node-qunit-puppeteer": "^2.1.2"
     }
 }
