@@ -447,7 +447,10 @@ function perform_player_turn()
 
 function getImagePosition() {
     var image = document.getElementById('mainboard');
-    var rect = image.getBoundingClientRect();
+    var rect = {
+        "left": 0,
+        "top": 0
+    } //image.getBoundingClientRect();
     PLANET_OFFSET[0] = rect.left
     PLANET_OFFSET[1] = rect.top
     MAINBOARD_OFFSET[0] = rect.left
@@ -703,7 +706,7 @@ function setPositionFixedElements()
         let el = document.getElementById("marker_" + seat)
         el.style.position = 'absolute';
         el.style.display = 'block';
-        var rect = el.getBoundingClientRect();
+        var rect = el.getBoundingClientRect();//TODO working?
         el.style.left = SHIP_OFFSET[0] + seat*80 + 30 + "px"
         el.style.top = SHIP_OFFSET[1] - rect.height + "px"
 

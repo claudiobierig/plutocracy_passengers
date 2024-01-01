@@ -1,12 +1,22 @@
 # TODOs
 
 - refactor
+  - only create divs once
+  - create and use getters/setters to get rid of array magics
+  - state into one object
+  - change flow for exceptions
+  - think about how we can input history to perform player_turn
+- tests
+  - system tests (complete game)
+  - unit tests for events
+  - unit tests for missing clicks
 - make look nice
+  - fix window size? mobile?
+  - make more horizontal
   - buttons
   - handling of picking up passengers
   - clickable areas
   - handle image of screen correctly when refreshing ui
-  - fix window size? mobile?
   - mark 1st class seats
   - win/loose
   - show events happening
