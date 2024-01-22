@@ -446,7 +446,7 @@ function perform_player_turn()
 }
 
 function getImagePosition() {
-    var image = document.getElementById('mainboard');
+    //var image = document.getElementById('mainboard');
     var rect = {
         "left": 0,
         "top": 0
@@ -582,6 +582,11 @@ function get_starting_planet_positions(starting_position)
 {
     const options = {
         'Standard': [0, 0, 0, 0, 0, 0],
+        'Mission Impossible': [0, 2, 3, 5, 4, 10],
+        'Ueberholmanoever': [1, 2, 4, 6, 0, 10],
+        'SehrSpaeteSchlange': [0, 0, 2, 5, 1, 2],
+        'Schlange': [0, 1, 2, 1, 2, 1],
+        'gamma/y': [1, 1, 3, 5, 2, 3],
         'Carina': [0, 0, 2, 6, 1, 4],
         'Ursa Major': [0, 2, 3, 3, 2, 0],
         'Ophiuchus': [1, 0, 4, 1, 4, 2],
@@ -592,9 +597,7 @@ function get_starting_planet_positions(starting_position)
         'Auriga': [0, 1, 3, 6, 6, 7],
         'Leo': [1, 0, 0, 6, 4, 5],
         'Vela': [1, 0, 0, 6, 3, 4],
-        'Orion': [0, 1, 0, 6, 2, 3],
-        'Ueberholmanoever': [1, 2, 4, 6, 0, 10],
-        'SehrSpaeteSchlange': [0, 0, 2, 5, 1, 2]
+        'Orion': [0, 1, 0, 6, 2, 3]
     }
 
     if(options.hasOwnProperty(starting_position)){
