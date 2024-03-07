@@ -5,7 +5,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;*/
-    background-color: black;
+    background-color: black;;
 }
 
 .container img {
@@ -47,8 +47,8 @@ footer {
 
 #root {
     position: relative;
-    width: 1122px;
-    height: 496px;
+    width: 1683px;
+    height: 744px;
     background: url('pics/main_image2.png') no-repeat left top;
     background-size: contain;
 }
