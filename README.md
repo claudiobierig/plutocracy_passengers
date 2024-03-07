@@ -1,5 +1,15 @@
 # TODOs
 
+- make look nice
+  - bigger image with space on the side
+  - buttons
+  - handling of picking up passengers
+  - mark 1st class seats
+  - win/loose
+  - show events happening
+- add convenience stuff
+  - show distance from ship position
+  - Rule link
 - refactor
   - only create divs once
   - create and use getters/setters to get rid of array magics
@@ -10,22 +20,7 @@
   - system tests (complete game)
   - unit tests for events
   - unit tests for missing clicks
-- make look nice
-  - fix window size? mobile?
-  - make more horizontal
-  - buttons
-  - handling of picking up passengers
-  - clickable areas
-  - handle image of screen correctly when refreshing ui
-  - mark 1st class seats
-  - win/loose
-  - show events happening
-- add convenience stuff
-  - show distance from ship position
-  - show discard pile on mouseover
-  - show draw pile on mouseover
-  - show stack sizes
-- Rule link
+
 - Highscore
 - show warning if we are travelling for too long
 - show history

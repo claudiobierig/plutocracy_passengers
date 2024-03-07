@@ -61,3 +61,25 @@ footer {
     opacity: 0.5;
 }
 
+.circle-background {
+    width: 25px; /* Set your desired width */
+    height: 25px; /* Set your desired height */
+    border-radius: 50%; /* Make the element circular */
+    background-color: #3498db; /* Set the background color */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white; /* Set the text color */
+    font-size: 10px; /* Set the font size */
+}
+
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+  }
+
+  .image-grid img {
+    width: 70px;
+    height: auto;
+  }

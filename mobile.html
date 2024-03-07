@@ -28,8 +28,12 @@
         </div>
         <img id="ship_marker" src="pics/ship_pink.png" alt="ship_marker" width="22px" position="absolute" style="display: none;">
 
-        <img id="drawing_pile" src="pics/back.png" alt="drawing_pile" width="70px" position="absolute" style="display: none;">
-        <img id="discard_pile" src="pics/empty.png" alt="discard_pile" width="70px" position="absolute" style="display: none;">
+        <img id="drawing_pile" src="pics/back.png" alt="drawing_pile" width="70px" onmouseover="show('drawing_pile_content')" position="absolute" style="display: none;">
+        <div class="circle-background" id="drawing_pile_size" position="absolute" style="display: none;">18</div>
+        
+        <img id="discard_pile" src="pics/empty.png" alt="discard_pile" width="70px" onmouseover="show('discard_pile_content')" position="absolute" style="display: none;">
+        <div class="circle-background" id="discard_pile_size" position="absolute">0</div>
+        
 
         <img id="marker_0" src="pics/councilor_pink_large.png" alt="marker_0" width="10px" position="absolute" style="display: none;">
         <img id="marker_1" src="pics/councilor_pink_large.png" alt="marker_1" width="10px" position="absolute" style="display: none;">
@@ -46,7 +50,46 @@
         <button id="end_turn" type="button" class="btn btn-primary" onclick="end_turn()" style="display: none;">End Turn</button>
 
         <!--<div id="helper_text" style="color: red; max-width: 350px;">Pick your starting position</div>-->
-
+        <div id="discard_pile_content" position="absolute" style="display: none;" class="image-grid">
+            <img id="discard_pile_content_1" src="pics/0.png">
+            <img id="discard_pile_content_2" src="pics/0.png">
+            <img id="discard_pile_content_3" src="pics/0.png">
+            <img id="discard_pile_content_4" src="pics/0.png">
+            <img id="discard_pile_content_5" src="pics/0.png">
+            <img id="discard_pile_content_6" src="pics/0.png">
+            <img id="discard_pile_content_7" src="pics/0.png">
+            <img id="discard_pile_content_8" src="pics/0.png">
+            <img id="discard_pile_content_9" src="pics/0.png">
+            <img id="discard_pile_content_10" src="pics/0.png">
+            <img id="discard_pile_content_11" src="pics/0.png">
+            <img id="discard_pile_content_12" src="pics/0.png">
+            <img id="discard_pile_content_13" src="pics/0.png">
+            <img id="discard_pile_content_14" src="pics/0.png">
+            <img id="discard_pile_content_15" src="pics/0.png">
+            <img id="discard_pile_content_16" src="pics/0.png">
+            <img id="discard_pile_content_17" src="pics/0.png">
+            <img id="discard_pile_content_18" src="pics/0.png">
+        </div>
+        <div id="drawing_pile_content" position="absolute" style="display: none;" class="image-grid">
+            <img id="drawing_pile_content_1" src="pics/0.png">
+            <img id="drawing_pile_content_2" src="pics/0.png">
+            <img id="drawing_pile_content_3" src="pics/0.png">
+            <img id="drawing_pile_content_4" src="pics/0.png">
+            <img id="drawing_pile_content_5" src="pics/0.png">
+            <img id="drawing_pile_content_6" src="pics/0.png">
+            <img id="drawing_pile_content_7" src="pics/0.png">
+            <img id="drawing_pile_content_8" src="pics/0.png">
+            <img id="drawing_pile_content_9" src="pics/0.png">
+            <img id="drawing_pile_content_10" src="pics/0.png">
+            <img id="drawing_pile_content_11" src="pics/0.png">
+            <img id="drawing_pile_content_12" src="pics/0.png">
+            <img id="drawing_pile_content_13" src="pics/0.png">
+            <img id="drawing_pile_content_14" src="pics/0.png">
+            <img id="drawing_pile_content_15" src="pics/0.png">
+            <img id="drawing_pile_content_16" src="pics/0.png">
+            <img id="drawing_pile_content_17" src="pics/0.png">
+            <img id="drawing_pile_content_18" src="pics/0.png">
+        </div>
         <div class="modal fade" id="new_game_modal" tabindex="-1" aria-labelledby="start_new_game_modal_title" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
