@@ -736,11 +736,13 @@ function setPositionFixedElements()
     let drawing_size_el = setPosition('drawing_pile_size', [DRAWING_PILE_OFFSET[0]+55, DRAWING_PILE_OFFSET[1]-10])
     drawing_size_el.style.display = 'flex';
     let drawing_pile_content_el = setPosition('drawing_pile_content', [DISCARD_PILE_OFFSET[0]-70, DRAWING_PILE_OFFSET[1]-160])
+    drawing_pile_content_el.style.backgroundColor = "white"
     drawing_pile_content_el.style.display = 'none';
     setPosition('discard_pile', DISCARD_PILE_OFFSET)
     let discard_size_el = setPosition('discard_pile_size', [DISCARD_PILE_OFFSET[0]+55, DISCARD_PILE_OFFSET[1]-10])
     discard_size_el.style.display = 'flex';
     let discard_pile_content_el = setPosition('discard_pile_content', [DISCARD_PILE_OFFSET[0]-70, DISCARD_PILE_OFFSET[1]-160])
+    discard_pile_content_el.style.backgroundColor = "white"
     discard_pile_content_el.style.display = 'none';
 
     for(let seat=0; seat<4; seat++)
@@ -817,20 +819,20 @@ function set_pile_content()
         let el = document.getElementById('drawing_pile_content_' + counter)
         if(PASSENGER_DECK.includes(counter))
         {
-            el.src = "pics/" + counter + ".png"
+            el.style.opacity = 1
         }
         else
         {
-            el.src = "pics/0.png"
+            el.style.opacity = 0.2
         }
         el = document.getElementById('discard_pile_content_' + counter)
         if(DISCARD_PILE.includes(counter))
         {
-            el.src = "pics/" + counter + ".png"
+            el.style.opacity = 1
         }
         else
         {
-            el.src = "pics/0.png"
+            el.style.opacity = 0.2
         }
     }
 }

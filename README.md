@@ -7,8 +7,8 @@
   - win/loose
   - show events happening
   - use real images
-- add convenience stuff
   - Rule link
+  - Help text
 - refactor
   - only create divs once
   - create and use getters/setters to get rid of array magics
