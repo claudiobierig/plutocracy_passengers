@@ -526,6 +526,15 @@ function createHexSpaces()
             newDiv.style.left = position[0]*SCALE + MAINBOARD_OFFSET[0] + 'px'
             newDiv.style.top = position[1]*SCALE + MAINBOARD_OFFSET[1] + 'px'
             container.appendChild(newDiv);
+            let newDiv2 = document.createElement('div');
+            let position2 = [PLANETS[planet][i][0] - 5, PLANETS[planet][i][1] -5]
+            newDiv2.className = 'circle-background-small';
+            newDiv2.id = 'Planet_' + planet + "_" + i + "_distance"
+            newDiv2.innerHTML = "0"
+            newDiv2.style.left = position2[0]*SCALE + MAINBOARD_OFFSET[0] + 'px'
+            newDiv2.style.top = position2[1]*SCALE + MAINBOARD_OFFSET[1] + 'px'
+            newDiv2.style.position = "absolute"
+            container.appendChild(newDiv2);
         }
     }
 }
@@ -666,6 +675,24 @@ function setPositionFixedElements()
         for(let i=0;i<PLANETS[planet].length;i++){
             let el = setPosition('Planet_' + planet + "_" + i, [PLANETS[planet][i][0]*SCALE + MAINBOARD_OFFSET[0], PLANETS[planet][i][1]*SCALE + MAINBOARD_OFFSET[1]])
             el.style.background = 'rgba(255, 255, 255, 0.1)'
+            let el2 = setPosition('Planet_' + planet + "_" + i + "_distance", [(PLANETS[planet][i][0] - 5)*SCALE + MAINBOARD_OFFSET[0], (PLANETS[planet][i][1] - 5)*SCALE + MAINBOARD_OFFSET[1]])
+            if(NEXT_TURN_TYPE != PLAYER_TURN || (SPACESHIP_POSITION[0] == planet && SPACESHIP_POSITION[1] == i))
+            {
+                el2.style.display = "none"
+            }
+            else
+            {
+                el2.style.display = "flex"
+                el2.innerHTML = DISTANCES[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][planet][i]
+                if(CURRENT_TURN.hasOwnProperty('destination') && CURRENT_TURN["destination"][0] == planet && CURRENT_TURN["destination"][1] == i)
+                {
+                    el2.style.backgroundColor = "red"
+                }
+                else
+                {
+                    el2.style.backgroundColor = "#dadada"
+                }
+            }
         }
         for(let i = 0; i<3;i++){
             let position = [

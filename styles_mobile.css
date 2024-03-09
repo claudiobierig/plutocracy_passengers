@@ -73,6 +73,19 @@ footer {
     font-size: 10px; /* Set the font size */
 }
 
+.circle-background-small {
+    width: 14px; /* Set your desired width */
+    height: 14px; /* Set your desired height */
+    border-radius: 50%; /* Make the element circular */
+    background-color: #dadada; /* Set the background color */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black; /* Set the text color */
+    font-size: 8px; /* Set the font size */
+    position: "absolute";
+}
+
 .image-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);

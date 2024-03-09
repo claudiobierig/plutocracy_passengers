@@ -1,14 +1,13 @@
 # TODOs
 
 - make look nice
-  - bigger image with space on the side
   - buttons
   - handling of picking up passengers
   - mark 1st class seats
   - win/loose
   - show events happening
+  - use real images
 - add convenience stuff
-  - show distance from ship position
   - Rule link
 - refactor
   - only create divs once
