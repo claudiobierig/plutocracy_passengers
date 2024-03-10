@@ -48,10 +48,8 @@
         <button id="new_game" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#new_game_modal">New Game</button>
         <button id="reset_turn" type="button" class="btn btn-primary" onclick="reset_turn()" style="display: none;">Reset Turn</button>
         <button id="end_turn" type="button" class="btn btn-primary" onclick="end_turn()" style="display: none;">End Turn</button>
-        <button id="help_button" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rules_modal" onmouseover="show('helper_text')">?</button>
+        <button id="help_button" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#helper_modal">?</button>
         
-
-        <div id="helper_text" style="display: none; width: 340px; top: 100px; left:170px; background-color: white; position: absolute;">Pick your starting position</div>
         <div id="discard_pile_content" position="absolute" style="display: none;" class="image-grid">
             <img id="discard_pile_content_1" src="pics/1.png">
             <img id="discard_pile_content_2" src="pics/2.png">
@@ -149,14 +147,15 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="rules_modal" tabindex="-1" aria-labelledby="rules_modal_title" aria-hidden="true">
+        <div class="modal fade" id="helper_modal" tabindex="-1" aria-labelledby="helper_modal_title" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="rules_modal_title">Single Player Rules</h5>
+                    <h5 class="modal-title" id="helper_modal_title">Quick Help</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div id="helper_text"></div>
                     <div>The rules of the base game can be downloaded <a href="https://doppeldenkspiele.de/downloads/Rules_Plutocracy.pdf" download>here</a>.</div>
                     <div>Add solo rules here.</div>
                 </div>
