@@ -21,9 +21,11 @@ const TU_POSITIONS = [[1,258.4],[1,235],[1,211.6],[1,188.2],[1,164.8],[1,141.4],
 let SCALE = 1
 
 
-const HELPER_TEXT_CHOOSE_STARTING_POSITION = `Pick your starting position by clicking on one of the planet positions.<br>
+const HELPER_TEXT_CHOOSE_STARTING_POSITION = `Click the help button to read the compleate rules.<br>
+Pick your starting position by clicking on one of the planet positions.<br>
 Afterwards click on the End Turn button.`
-const HELPER_TEXT_PLAYER_TURN = `1) Pick up passengers.<br>
+const HELPER_TEXT_PLAYER_TURN = `Click the help button to read the compleate rules.<br>
+1) Pick up passengers.<br>
 2) Choose a destination.<br>
 3) If you want to spent additional TU, click on the corresponding space.`
 
@@ -345,8 +347,8 @@ function perform_next_turn()
 
 function setHelperText(message)
 {
-    //let helper_div = document.getElementById("helper_text");
-    //helper_div.innerHTML = message
+    let helper_div = document.getElementById("helper_text");
+    helper_div.innerHTML = message
 }
 
 function passenger_is_first_class(passenger){
@@ -783,8 +785,7 @@ function setPositionFixedElements()
     setPosition('new_game', [DISCARD_PILE_OFFSET[0] + 250, DISCARD_PILE_OFFSET[1]])
     setPosition('reset_turn', [DRAWING_PILE_OFFSET[0] + 100, DRAWING_PILE_OFFSET[1]])
     setPosition('end_turn', [DRAWING_PILE_OFFSET[0] + 250, DRAWING_PILE_OFFSET[1]])
-
-    //setPosition('helper_text', [SHIP_OFFSET[0] + 330 , SHIP_OFFSET[1] -20])
+    setPosition('help_button', [DRAWING_PILE_OFFSET[0] + 100, DISCARD_PILE_OFFSET[1]])
 }
 
 function makePlanetsClickable()
@@ -911,6 +912,11 @@ let discard_pile = document.getElementById("discard_pile");
 discard_pile.onmouseleave = function () {
     let discard_pile_content = document.getElementById("discard_pile_content");
     discard_pile_content.style.display = "none";
+};
+let help_button = document.getElementById("help_button");
+help_button.onmouseleave = function () {
+    let helper_text = document.getElementById("helper_text");
+    helper_text.style.display = "none";
 };
 
 window.addEventListener('resize', handleResize);
