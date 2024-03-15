@@ -18,6 +18,8 @@ const NEPTUN_POSITIONS = [
 ]
 const PLANETS = [EARTH_POSITIONS, MARS_POSITIONS, JUPITER_POSITIONS, SATURN_POSITIONS, URANUS_POSITIONS, NEPTUN_POSITIONS]
 const TU_POSITIONS = [[1,258.4],[1,235],[1,211.6],[1,188.2],[1,164.8],[1,141.4],[1,118],[1,94.6],[1,71.2],[1,47.8],[1,24.4],[1,1],[24.4,1],[47.8,1],[71.2,1],[94.6,1],[118,1],[141.4,1],[164.8,1],[188.2,1],[211.6,1],[235,1],[258.4,1],[281.8,1],[305.2,1],[328.6,1],[352,1],[375.4,1],[398.8,1],[422.2,1],[445.6,1],[469,1],[492.4,1],[515.8,1],[539.2,1],[562.6,1],[586,1],[609.4,1],[632.8,1],[656.2,1],[679.6,1],[679.6,24.4],[679.6,47.8],[679.6,71.2],[679.6,94.6],[679.6,118],[679.6,141.4],[679.6,164.8],[679.6,188.2],[679.6,211.6],[679.6,235],[679.6,258.4],[679.6,281.8],[679.6,305.2],[679.6,328.6],[679.6,352],[679.6,375.4],[679.6,398.8],[679.6,422.2],[679.6,445.6],[679.6,469],[656.2,469],[632.8,469],[609.4,469],[586,469],[562.6,469],[539.2,469],[515.8,469],[492.4,469],[469,469],[445.6,469],[422.2,469],[398.8,469],[375.4,469],[352,469]];
+let SCALE = 1
+
 
 const HELPER_TEXT_CHOOSE_STARTING_POSITION = `Pick your starting position by clicking on one of the planet positions.<br>
 Afterwards click on the End Turn button.`
@@ -81,7 +83,7 @@ const DISTANCES = [[[[2,8],[8,5,7],[9,9,7,5,9],[11,8,6,9,10,10,11],[12,12,8,7,10
 let MAINBOARD_OFFSET = [0, 0]
 let DRAWING_PILE_OFFSET = [0, 0]
 let DISCARD_PILE_OFFSET = [0, 0]
-let PLANET_OFFSET = [0, 0]
+let PLANET_OFFSET = [425, 0]
 let SHIP_OFFSET = [0, 0]
 
 //State
@@ -451,22 +453,24 @@ function getImagePosition() {
         "left": 0,
         "top": 0
     } //image.getBoundingClientRect();
-    PLANET_OFFSET[0] = rect.left
+    PLANET_OFFSET[0] = rect.left + 700
     PLANET_OFFSET[1] = rect.top
     MAINBOARD_OFFSET[0] = rect.left
-    MAINBOARD_OFFSET[1] = rect.top + 140
-    DRAWING_PILE_OFFSET[0] = rect.left + 701 + 35
-    DRAWING_PILE_OFFSET[1] = rect.top + 140 + 25
-    DISCARD_PILE_OFFSET[0] = rect.left + 701 + 35
-    DISCARD_PILE_OFFSET[1] = rect.top + 140 + 75
-    SHIP_OFFSET[0] = MAINBOARD_OFFSET[0] + 35
-    SHIP_OFFSET[1] = MAINBOARD_OFFSET[1] + 496 + 35
+    MAINBOARD_OFFSET[1] = rect.top
+
+    
+    SHIP_OFFSET[0] = PLANET_OFFSET[0] + 35
+    SHIP_OFFSET[1] = PLANET_OFFSET[1] + 6*46 + 35
+    DRAWING_PILE_OFFSET[0] = SHIP_OFFSET[0]
+    DRAWING_PILE_OFFSET[1] = SHIP_OFFSET[1] + 2*46 - 10
+    DISCARD_PILE_OFFSET[0] = DRAWING_PILE_OFFSET[0]
+    DISCARD_PILE_OFFSET[1] = DRAWING_PILE_OFFSET[1] + 46 + 10
 }
 
 function getPosition(time_spent)
 {
     var time_space = time_spent % 75
-    return [TU_POSITIONS[time_space][0], TU_POSITIONS[time_space][1]]
+    return [TU_POSITIONS[time_space][0]*SCALE, TU_POSITIONS[time_space][1]*SCALE]
 }
 
 function shuffle(array) {
@@ -519,9 +523,18 @@ function createHexSpaces()
                 newDiv.addEventListener('click', function(){
                     onClickHex(planet, i)});
             }
-            newDiv.style.left = position[0] + MAINBOARD_OFFSET[0] + 'px'
-            newDiv.style.top = position[1] + MAINBOARD_OFFSET[1] + 'px'
+            newDiv.style.left = position[0]*SCALE + MAINBOARD_OFFSET[0] + 'px'
+            newDiv.style.top = position[1]*SCALE + MAINBOARD_OFFSET[1] + 'px'
             container.appendChild(newDiv);
+            let newDiv2 = document.createElement('div');
+            let position2 = [PLANETS[planet][i][0] - 5, PLANETS[planet][i][1] -5]
+            newDiv2.className = 'circle-background-small';
+            newDiv2.id = 'Planet_' + planet + "_" + i + "_distance"
+            newDiv2.innerHTML = "0"
+            newDiv2.style.left = position2[0]*SCALE + MAINBOARD_OFFSET[0] + 'px'
+            newDiv2.style.top = position2[1]*SCALE + MAINBOARD_OFFSET[1] + 'px'
+            newDiv2.style.position = "absolute"
+            container.appendChild(newDiv2);
         }
     }
 }
@@ -533,7 +546,7 @@ function createPlanetPassengers()
         for(let i=0;i<3;i++){
             let el = document.createElement('img');
             el.id = 'Passenger_' + i + '_Planet_' + planet
-            el.style.width = "70px"
+            el.style.width = SCALE*70 + "px" //TODO scale
             el.style.display = 'none'
             if(!EVENT_LISTENERS_CREATED){
                 el.addEventListener('click', function(){
@@ -571,8 +584,8 @@ function moveMarkerToTu(marker_name, tu)
 {
     var time_space = tu[0] % 75
     let time_marker = document.getElementById(marker_name);
-    time_marker.style.left = MAINBOARD_OFFSET[0] + TU_POSITIONS[time_space][0] + TIME_MARKER_OFFSET[0] + 'px'
-    time_marker.style.top = MAINBOARD_OFFSET[1] + TU_POSITIONS[time_space][1] - tu[1]*3 + TIME_MARKER_OFFSET[1] + 'px'
+    time_marker.style.left = MAINBOARD_OFFSET[0] + TU_POSITIONS[time_space][0]*SCALE + TIME_MARKER_OFFSET[0]*SCALE + 'px'
+    time_marker.style.top = MAINBOARD_OFFSET[1] + TU_POSITIONS[time_space][1]*SCALE - tu[1]*3*SCALE + TIME_MARKER_OFFSET[1]*SCALE + 'px'
     time_marker.style.position = 'absolute';
     time_marker.style.display = 'block';
     return time_marker
@@ -650,7 +663,7 @@ function setPosition(element_id, position)
 function setPositionFixedElements()
 {
     for (let i = 0; i <= 74; i++) {
-        let el = setPosition('TU_' + i, [TU_POSITIONS[i][0] + MAINBOARD_OFFSET[0], TU_POSITIONS[i][1] + MAINBOARD_OFFSET[1]])
+        let el = setPosition('TU_' + i, [TU_POSITIONS[i][0]*SCALE + MAINBOARD_OFFSET[0], TU_POSITIONS[i][1]*SCALE + MAINBOARD_OFFSET[1]])
         el.style.background = 'rgba(255, 0, 0, 0.1)'
     }
     if(CURRENT_TURN.hasOwnProperty('arrival_time')){
@@ -660,13 +673,31 @@ function setPositionFixedElements()
     
     for(let planet=0;planet<PLANETS.length;planet++){
         for(let i=0;i<PLANETS[planet].length;i++){
-            let el = setPosition('Planet_' + planet + "_" + i, [PLANETS[planet][i][0] + MAINBOARD_OFFSET[0], PLANETS[planet][i][1] + MAINBOARD_OFFSET[1]])
+            let el = setPosition('Planet_' + planet + "_" + i, [PLANETS[planet][i][0]*SCALE + MAINBOARD_OFFSET[0], PLANETS[planet][i][1]*SCALE + MAINBOARD_OFFSET[1]])
             el.style.background = 'rgba(255, 255, 255, 0.1)'
+            let el2 = setPosition('Planet_' + planet + "_" + i + "_distance", [(PLANETS[planet][i][0] - 5)*SCALE + MAINBOARD_OFFSET[0], (PLANETS[planet][i][1] - 5)*SCALE + MAINBOARD_OFFSET[1]])
+            if(NEXT_TURN_TYPE != PLAYER_TURN || (SPACESHIP_POSITION[0] == planet && SPACESHIP_POSITION[1] == i))
+            {
+                el2.style.display = "none"
+            }
+            else
+            {
+                el2.style.display = "flex"
+                el2.innerHTML = DISTANCES[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][planet][i]
+                if(CURRENT_TURN.hasOwnProperty('destination') && CURRENT_TURN["destination"][0] == planet && CURRENT_TURN["destination"][1] == i)
+                {
+                    el2.style.backgroundColor = "red"
+                }
+                else
+                {
+                    el2.style.backgroundColor = "#dadada"
+                }
+            }
         }
         for(let i = 0; i<3;i++){
             let position = [
-                PLANET_OFFSET[0] + 70 + planet*140,
-                PLANET_OFFSET[1] + i*46
+                SCALE*(PLANET_OFFSET[0] + 70 + Math.floor(planet/2)*140),
+                SCALE*(PLANET_OFFSET[1] + (i + (planet % 2)*3)*46)
             ]
             passenger = setPosition('Passenger_' + i + '_Planet_' + planet, position)
             if(i<PLANET_PASSENGERS[planet].length){
@@ -702,7 +733,17 @@ function setPositionFixedElements()
     }
 
     setPosition('drawing_pile', DRAWING_PILE_OFFSET)
+    let drawing_size_el = setPosition('drawing_pile_size', [DRAWING_PILE_OFFSET[0]+55, DRAWING_PILE_OFFSET[1]-10])
+    drawing_size_el.style.display = 'flex';
+    let drawing_pile_content_el = setPosition('drawing_pile_content', [DISCARD_PILE_OFFSET[0]-70, DRAWING_PILE_OFFSET[1]-160])
+    drawing_pile_content_el.style.backgroundColor = "white"
+    drawing_pile_content_el.style.display = 'none';
     setPosition('discard_pile', DISCARD_PILE_OFFSET)
+    let discard_size_el = setPosition('discard_pile_size', [DISCARD_PILE_OFFSET[0]+55, DISCARD_PILE_OFFSET[1]-10])
+    discard_size_el.style.display = 'flex';
+    let discard_pile_content_el = setPosition('discard_pile_content', [DISCARD_PILE_OFFSET[0]-70, DISCARD_PILE_OFFSET[1]-160])
+    discard_pile_content_el.style.backgroundColor = "white"
+    discard_pile_content_el.style.display = 'none';
 
     for(let seat=0; seat<4; seat++)
     {
@@ -739,11 +780,10 @@ function setPositionFixedElements()
         }
     }
 
-    setPosition('new_game', [DISCARD_PILE_OFFSET[0], SHIP_OFFSET[1] - 50])
-    setPosition('reset_turn', [DISCARD_PILE_OFFSET[0], SHIP_OFFSET[1]])
-    setPosition('end_turn', [DISCARD_PILE_OFFSET[0], SHIP_OFFSET[1] + 50])
-
-    setPosition('helper_text', [SHIP_OFFSET[0] + 330 , SHIP_OFFSET[1] -20])
+    setPosition('new_game', [DISCARD_PILE_OFFSET[0] + 250, DISCARD_PILE_OFFSET[1]])
+    setPosition('reset_turn', [DRAWING_PILE_OFFSET[0] + 100, DRAWING_PILE_OFFSET[1]])
+    setPosition('end_turn', [DRAWING_PILE_OFFSET[0] + 250, DRAWING_PILE_OFFSET[1]])
+    setPosition('help_button', [DRAWING_PILE_OFFSET[0] + 100, DISCARD_PILE_OFFSET[1]])
 }
 
 function makePlanetsClickable()
@@ -765,6 +805,37 @@ document.getElementById('fixSeed').addEventListener('change', function() {
 });
 
 
+function show(el_id)
+{
+    let el = document.getElementById(el_id)
+    el.style.display = 'grid'
+}
+
+function set_pile_content()
+{
+    for(let counter=1;counter<19;counter++)
+    {
+        let el = document.getElementById('drawing_pile_content_' + counter)
+        if(PASSENGER_DECK.includes(counter))
+        {
+            el.style.opacity = 1
+        }
+        else
+        {
+            el.style.opacity = 0.2
+        }
+        el = document.getElementById('discard_pile_content_' + counter)
+        if(DISCARD_PILE.includes(counter))
+        {
+            el.style.opacity = 1
+        }
+        else
+        {
+            el.style.opacity = 0.2
+        }
+    }
+}
+
 function refreshUI()
 {
     getImagePosition()
@@ -773,16 +844,16 @@ function refreshUI()
     for(let marker=0;marker<planet_markers.length;marker++){
         setPosition(planet_markers[marker], 
             [
-                PLANETS[marker][CURRENT_PLANET_POSITIONS[marker]][0] + MAINBOARD_OFFSET[0] + PLANET_POSITION_OFFSET[0],
-                PLANETS[marker][CURRENT_PLANET_POSITIONS[marker]][1] + MAINBOARD_OFFSET[1] + PLANET_POSITION_OFFSET[1]
+                SCALE*(PLANETS[marker][CURRENT_PLANET_POSITIONS[marker]][0] + MAINBOARD_OFFSET[0] + PLANET_POSITION_OFFSET[0]),
+                SCALE*(PLANETS[marker][CURRENT_PLANET_POSITIONS[marker]][1] + MAINBOARD_OFFSET[1] + PLANET_POSITION_OFFSET[1])
             ])
     }
 
     if(SPACESHIP_POSITION.length == 2){
         setPosition('ship_marker',
         [
-            MAINBOARD_OFFSET[0] + PLANETS[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][0] + SHIP_POSITION_OFFSET[0],
-            MAINBOARD_OFFSET[1] + PLANETS[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][1] + SHIP_POSITION_OFFSET[1]
+            SCALE*(MAINBOARD_OFFSET[0] + PLANETS[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][0] + SHIP_POSITION_OFFSET[0]),
+            SCALE*(MAINBOARD_OFFSET[1] + PLANETS[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][1] + SHIP_POSITION_OFFSET[1])
         ])
     }
     
@@ -795,7 +866,8 @@ function refreshUI()
     {
         drawing_pile.src = "pics/back.png"
     }
-
+    let drawing_pile_size = document.getElementById('drawing_pile_size')
+    drawing_pile_size.textContent = PASSENGER_DECK.length
     let discard_pile = document.getElementById('discard_pile')
     if(DISCARD_PILE.length == 0)
     {
@@ -805,6 +877,9 @@ function refreshUI()
     {
         discard_pile.src = "pics/" + DISCARD_PILE[DISCARD_PILE.length - 1] + ".png"
     }
+    let discard_pile_size = document.getElementById('discard_pile_size')
+    discard_pile_size.textContent = DISCARD_PILE.length
+    set_pile_content()
 
     moveTimeMarkers()
 }
@@ -824,6 +899,28 @@ window.onload = function () {
     refreshUI()
     EVENT_LISTENERS_CREATED = true
     setNextTurnType()
+    $('#new_game_modal').modal('show');
+};
+
+let drawing_pile = document.getElementById("drawing_pile");
+drawing_pile.onmouseleave = function () {
+    let drawing_pile_content = document.getElementById("drawing_pile_content");
+    drawing_pile_content.style.display = "none";
+};
+let discard_pile = document.getElementById("discard_pile");
+discard_pile.onmouseleave = function () {
+    let discard_pile_content = document.getElementById("discard_pile_content");
+    discard_pile_content.style.display = "none";
 };
 
 window.addEventListener('resize', handleResize);
+
+function handleMouseClick(event) {
+    // Get the mouse coordinates
+    const mouseX = event.clientX;
+    const mouseY = event.clientY;
+
+    // Log the coordinates to the console (you can use them as needed)
+    console.log(`Mouse Click Position: X=${mouseX}, Y=${mouseY}`);
+}
+document.addEventListener('click', handleMouseClick);

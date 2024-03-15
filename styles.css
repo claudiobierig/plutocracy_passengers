@@ -5,7 +5,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;*/
-    background-color: black;
+    background-color: black;;
 }
 
 .container img {
@@ -47,9 +47,9 @@ footer {
 
 #root {
     position: relative;
-    width: 841px;
-    height: 776px;
-    background: url('pics/main_image.png') no-repeat left top;
+    width: 1683px;
+    height: 744px;
+    background: url('pics/main_image2.png') no-repeat left top;
     background-size: contain;
 }
 
@@ -61,3 +61,38 @@ footer {
     opacity: 0.5;
 }
 
+.circle-background {
+    width: 25px; /* Set your desired width */
+    height: 25px; /* Set your desired height */
+    border-radius: 50%; /* Make the element circular */
+    background-color: #3498db; /* Set the background color */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white; /* Set the text color */
+    font-size: 10px; /* Set the font size */
+}
+
+.circle-background-small {
+    width: 14px; /* Set your desired width */
+    height: 14px; /* Set your desired height */
+    border-radius: 50%; /* Make the element circular */
+    background-color: #dadada; /* Set the background color */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black; /* Set the text color */
+    font-size: 8px; /* Set the font size */
+    position: "absolute";
+}
+
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+  }
+
+  .image-grid img {
+    width: 70px;
+    height: auto;
+  }

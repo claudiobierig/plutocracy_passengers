@@ -28,8 +28,12 @@
         </div>
         <img id="ship_marker" src="pics/ship_pink.png" alt="ship_marker" width="22px" position="absolute" style="display: none;">
 
-        <img id="drawing_pile" src="pics/back.png" alt="drawing_pile" width="70px" position="absolute" style="display: none;">
-        <img id="discard_pile" src="pics/empty.png" alt="discard_pile" width="70px" position="absolute" style="display: none;">
+        <img id="drawing_pile" src="pics/back.png" alt="drawing_pile" width="70px" onmouseover="show('drawing_pile_content')" position="absolute" style="display: none;">
+        <div class="circle-background" id="drawing_pile_size" position="absolute" style="display: none;">18</div>
+        
+        <img id="discard_pile" src="pics/empty.png" alt="discard_pile" width="70px" onmouseover="show('discard_pile_content')" position="absolute" style="display: none;">
+        <div class="circle-background" id="discard_pile_size" position="absolute">0</div>
+        
 
         <img id="marker_0" src="pics/councilor_pink_large.png" alt="marker_0" width="10px" position="absolute" style="display: none;">
         <img id="marker_1" src="pics/councilor_pink_large.png" alt="marker_1" width="10px" position="absolute" style="display: none;">
@@ -44,9 +48,48 @@
         <button id="new_game" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#new_game_modal">New Game</button>
         <button id="reset_turn" type="button" class="btn btn-primary" onclick="reset_turn()" style="display: none;">Reset Turn</button>
         <button id="end_turn" type="button" class="btn btn-primary" onclick="end_turn()" style="display: none;">End Turn</button>
-
-        <div id="helper_text" style="color: red; max-width: 350px;">Pick your starting position</div>
-
+        <button id="help_button" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#helper_modal">?</button>
+        
+        <div id="discard_pile_content" position="absolute" style="display: none;" class="image-grid">
+            <img id="discard_pile_content_1" src="pics/1.png">
+            <img id="discard_pile_content_2" src="pics/2.png">
+            <img id="discard_pile_content_3" src="pics/3.png">
+            <img id="discard_pile_content_4" src="pics/4.png">
+            <img id="discard_pile_content_5" src="pics/5.png">
+            <img id="discard_pile_content_6" src="pics/6.png">
+            <img id="discard_pile_content_7" src="pics/7.png">
+            <img id="discard_pile_content_8" src="pics/8.png">
+            <img id="discard_pile_content_9" src="pics/9.png">
+            <img id="discard_pile_content_10" src="pics/10.png">
+            <img id="discard_pile_content_11" src="pics/11.png">
+            <img id="discard_pile_content_12" src="pics/12.png">
+            <img id="discard_pile_content_13" src="pics/13.png">
+            <img id="discard_pile_content_14" src="pics/14.png">
+            <img id="discard_pile_content_15" src="pics/15.png">
+            <img id="discard_pile_content_16" src="pics/16.png">
+            <img id="discard_pile_content_17" src="pics/17.png">
+            <img id="discard_pile_content_18" src="pics/18.png">
+        </div>
+        <div id="drawing_pile_content" position="absolute" style="display: none;" class="image-grid">
+            <img id="drawing_pile_content_1" src="pics/1.png">
+            <img id="drawing_pile_content_2" src="pics/2.png">
+            <img id="drawing_pile_content_3" src="pics/3.png">
+            <img id="drawing_pile_content_4" src="pics/4.png">
+            <img id="drawing_pile_content_5" src="pics/5.png">
+            <img id="drawing_pile_content_6" src="pics/6.png">
+            <img id="drawing_pile_content_7" src="pics/7.png">
+            <img id="drawing_pile_content_8" src="pics/8.png">
+            <img id="drawing_pile_content_9" src="pics/9.png">
+            <img id="drawing_pile_content_10" src="pics/10.png">
+            <img id="drawing_pile_content_11" src="pics/11.png">
+            <img id="drawing_pile_content_12" src="pics/12.png">
+            <img id="drawing_pile_content_13" src="pics/13.png">
+            <img id="drawing_pile_content_14" src="pics/14.png">
+            <img id="drawing_pile_content_15" src="pics/15.png">
+            <img id="drawing_pile_content_16" src="pics/16.png">
+            <img id="drawing_pile_content_17" src="pics/17.png">
+            <img id="drawing_pile_content_18" src="pics/18.png">
+        </div>
         <div class="modal fade" id="new_game_modal" tabindex="-1" aria-labelledby="start_new_game_modal_title" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -90,14 +133,31 @@
                         </div>
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="fixSeed">
-                            <label class="form-check-label" for="fixSeed">Fix Input</label>
+                            <label class="form-check-label" for="fixSeed">Use seed as random input</label>
                         </div>
                         <div class="mb-3" id="fixSeedInputContainer" style="display: none;">
-                            <label for="seedInput" class="form-label">Hidden Input</label>
                             <input type="text" class="form-control" id="seedInput">
                         </div>
                         <button type="button" class="btn btn-primary" onclick="new_game()" data-bs-dismiss="modal">New Game</button>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade modal-lg" id="helper_modal" tabindex="-1" aria-labelledby="helper_modal_title" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="helper_modal_title">Quick Help</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="helper_text"></div>
+                    <div>The rules of the base game can be downloaded <a href="https://doppeldenkspiele.de/downloads/Rules_Plutocracy.pdf" download>here</a>.</div>
+                    <div>Add solo rules here.</div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
