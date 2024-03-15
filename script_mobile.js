@@ -899,6 +899,7 @@ window.onload = function () {
     refreshUI()
     EVENT_LISTENERS_CREATED = true
     setNextTurnType()
+    $('#new_game_modal').modal('show');
 };
 
 let drawing_pile = document.getElementById("drawing_pile");

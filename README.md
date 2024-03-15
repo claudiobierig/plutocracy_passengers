@@ -5,15 +5,34 @@
   - handling of picking up passengers
   - mark 1st class seats
   - win/loose
+    - make standalone loosing/winning modal?
+    - check loosing condition same as in rules
+    - phrase loosing with planet names
   - show events happening
+    - end turn:
+      - pick up passengers, move el from A to B multiple times
+      - fly (start with straight line)
+        - move spaceship
+        - move timedisc
+    - planet rotation
+      - move planets (one after the other, start with straight line)
+      - move event token
+    - new passengers, multiple times
+      - turn around card
+      - move card from A to B (including discard pile)
+      - move event token
+    - end event
+      - show success message
+    - player turn
+      - drop of passengers
+    - requires async happening of event itself and next event
+    - for replaying require skipping of animation
   - use real images
-  - Rule link
-  - Help text
+  - Rule link (wait for finished rules)
+  - Help text (extend)
 - refactor
-  - only create divs once
   - create and use getters/setters to get rid of array magics
   - state into one object
-  - change flow for exceptions
   - think about how we can input history to perform player_turn
 - tests
   - system tests (complete game)
@@ -21,7 +40,10 @@
   - unit tests for missing clicks
 
 - Highscore
+  - submit daily challenge
+  - for each succeeded challenge, one chance
 - show warning if we are travelling for too long
 - show history
+- load from text file
 
 - Bugs
