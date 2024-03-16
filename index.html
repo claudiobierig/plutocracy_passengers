@@ -11,14 +11,13 @@
 
 <body>
     <div position="relative" id="root">
-        <!--<img id="mainboard" src="pics/main_image.png" alt="mainboard" width="841px" height="776px" position="absolute"> -->
         <div id="clickable_areas"></div>
-        <img id="earth_marker" src="pics/planet_grey.png" alt="earth_marker" width="30px" position="absolute" style="display: none;">
-        <img id="mars_marker" src="pics/planet_red.png" alt="mars_marker" width="30px" position="absolute" style="display: none;">
-        <img id="jupiter_marker" src="pics/planet_orange.png" alt="jupiter_marker" width="30px" position="absolute" style="display: none;">
-        <img id="saturn_marker" src="pics/planet_yellow.png" alt="saturn_marker" width="30px" position="absolute" style="display: none;">
-        <img id="uranus_marker" src="pics/planet_green.png" alt="uranus_marker" width="30px" position="absolute" style="display: none;">
-        <img id="neptun_marker" src="pics/planet_blue.png" alt="neptun_marker" width="30px" position="absolute" style="display: none;">
+        <img id="earth_marker" src="pics/planet_grey.png" alt="earth_marker" width="30px" position="absolute" style="display: none; cursor: pointer;">
+        <img id="mars_marker" src="pics/planet_red.png" alt="mars_marker" width="30px" position="absolute" style="display: none; cursor: pointer;">
+        <img id="jupiter_marker" src="pics/planet_orange.png" alt="jupiter_marker" width="30px" position="absolute" style="display: none; cursor: pointer;">
+        <img id="saturn_marker" src="pics/planet_yellow.png" alt="saturn_marker" width="30px" position="absolute" style="display: none; cursor: pointer;">
+        <img id="uranus_marker" src="pics/planet_green.png" alt="uranus_marker" width="30px" position="absolute" style="display: none; cursor: pointer;">
+        <img id="neptun_marker" src="pics/planet_blue.png" alt="neptun_marker" width="30px" position="absolute" style="display: none; cursor: pointer;">
 
         <div id="tu_markers">
             <img id="time_marker" src="pics/time_pink.png" alt="time_marker" width="22px" position="absolute" style="display: none;">
@@ -45,10 +44,10 @@
         <div id="seat_2_container" class="full"><img id="seat_2" src="pics/0.png" alt="seat_2" width="70px" position="absolute" style="display: none;"></div>
         <div id="seat_3_container" class="full"><img id="seat_3" src="pics/0.png" alt="seat_3" width="70px" position="absolute" style="display: none;"></div>
 
-        <button id="new_game" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#new_game_modal">New Game</button>
+        <button id="new_game" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#new_game_modal" style="display: none;">New Game</button>
         <button id="reset_turn" type="button" class="btn btn-primary" onclick="reset_turn()" style="display: none;">Reset Turn</button>
         <button id="end_turn" type="button" class="btn btn-primary" onclick="end_turn()" style="display: none;">End Turn</button>
-        <button id="help_button" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#helper_modal">?</button>
+        <button id="help_button" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#helper_modal" style="display: none;">?</button>
         
         <div id="discard_pile_content" position="absolute" style="display: none;" class="image-grid">
             <img id="discard_pile_content_1" src="pics/1.png">

@@ -664,17 +664,19 @@ function setPositionFixedElements()
 {
     for (let i = 0; i <= 74; i++) {
         let el = setPosition('TU_' + i, [TU_POSITIONS[i][0]*SCALE + MAINBOARD_OFFSET[0], TU_POSITIONS[i][1]*SCALE + MAINBOARD_OFFSET[1]])
-        el.style.background = 'rgba(255, 0, 0, 0.1)'
+        el.style.background = 'rgba(255, 0, 0, 0)'
+        el.style.boxShadow = ''
     }
     if(CURRENT_TURN.hasOwnProperty('arrival_time')){
         let el = document.getElementById('TU_' + CURRENT_TURN['arrival_time']%75)
         el.style.background = 'red'
+        el.style.boxShadow = "inset 0 0 10px rgba(255, 255, 255, 0.8)"
     }
     
     for(let planet=0;planet<PLANETS.length;planet++){
         for(let i=0;i<PLANETS[planet].length;i++){
             let el = setPosition('Planet_' + planet + "_" + i, [PLANETS[planet][i][0]*SCALE + MAINBOARD_OFFSET[0], PLANETS[planet][i][1]*SCALE + MAINBOARD_OFFSET[1]])
-            el.style.background = 'rgba(255, 255, 255, 0.1)'
+            el.style.background = 'rgba(255, 255, 255, 0.0)'
             let el2 = setPosition('Planet_' + planet + "_" + i + "_distance", [(PLANETS[planet][i][0] - 5)*SCALE + MAINBOARD_OFFSET[0], (PLANETS[planet][i][1] - 5)*SCALE + MAINBOARD_OFFSET[1]])
             if(NEXT_TURN_TYPE != PLAYER_TURN || (SPACESHIP_POSITION[0] == planet && SPACESHIP_POSITION[1] == i))
             {
@@ -842,13 +844,19 @@ function refreshUI()
     setPositionFixedElements()
     let planet_markers = ['earth_marker', 'mars_marker', 'jupiter_marker', 'saturn_marker', 'uranus_marker', 'neptun_marker']
     for(let marker=0;marker<planet_markers.length;marker++){
-        setPosition(planet_markers[marker], 
+        el = setPosition(planet_markers[marker], 
             [
                 SCALE*(PLANETS[marker][CURRENT_PLANET_POSITIONS[marker]][0] + MAINBOARD_OFFSET[0] + PLANET_POSITION_OFFSET[0]),
                 SCALE*(PLANETS[marker][CURRENT_PLANET_POSITIONS[marker]][1] + MAINBOARD_OFFSET[1] + PLANET_POSITION_OFFSET[1])
             ])
+        //TODO: change src el.style.border = ""
     }
 
+    if(CURRENT_TURN.hasOwnProperty('destination') && CURRENT_PLANET_POSITIONS[CURRENT_TURN["destination"][0]] == CURRENT_TURN["destination"][1])
+    {
+        let current_planet_dest = document.getElementById(planet_markers[CURRENT_TURN["destination"][0]])
+        //TODO: change src current_planet_dest.style.border = "10px solid white"
+    }
     if(SPACESHIP_POSITION.length == 2){
         setPosition('ship_marker',
         [
