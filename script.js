@@ -737,13 +737,13 @@ function setPositionFixedElements()
     setPosition('drawing_pile', DRAWING_PILE_OFFSET)
     let drawing_size_el = setPosition('drawing_pile_size', [DRAWING_PILE_OFFSET[0]+55, DRAWING_PILE_OFFSET[1]-10])
     drawing_size_el.style.display = 'flex';
-    let drawing_pile_content_el = setPosition('drawing_pile_content', [DISCARD_PILE_OFFSET[0]-70, DRAWING_PILE_OFFSET[1]-160])
+    let drawing_pile_content_el = setPosition('drawing_pile_content', [DISCARD_PILE_OFFSET[0]-355, DRAWING_PILE_OFFSET[1]-160])
     drawing_pile_content_el.style.backgroundColor = "white"
     drawing_pile_content_el.style.display = 'none';
     setPosition('discard_pile', DISCARD_PILE_OFFSET)
     let discard_size_el = setPosition('discard_pile_size', [DISCARD_PILE_OFFSET[0]+55, DISCARD_PILE_OFFSET[1]-10])
     discard_size_el.style.display = 'flex';
-    let discard_pile_content_el = setPosition('discard_pile_content', [DISCARD_PILE_OFFSET[0]-70, DISCARD_PILE_OFFSET[1]-160])
+    let discard_pile_content_el = setPosition('discard_pile_content', [DISCARD_PILE_OFFSET[0]-355, DISCARD_PILE_OFFSET[1]-160])
     discard_pile_content_el.style.backgroundColor = "white"
     discard_pile_content_el.style.display = 'none';
 
@@ -790,10 +790,10 @@ function setPositionFixedElements()
         }
     }
 
-    setPosition('new_game', [SHIP_OFFSET[0] + 300, DISCARD_PILE_OFFSET[1] + 70])
-    setPosition('reset_turn', [SHIP_OFFSET[0], DISCARD_PILE_OFFSET[1] + 70])
-    setPosition('end_turn', [SHIP_OFFSET[0] + 120, DISCARD_PILE_OFFSET[1] + 70])
-    setPosition('help_button', [SHIP_OFFSET[0] + 240, DISCARD_PILE_OFFSET[1] + 70])
+    setPosition('new_game', [SHIP_OFFSET[0] , DISCARD_PILE_OFFSET[1] + 70])
+    setPosition('reset_turn', [SHIP_OFFSET[0] + 220, DISCARD_PILE_OFFSET[1] + 70])
+    setPosition('end_turn', [SHIP_OFFSET[0] + 340, DISCARD_PILE_OFFSET[1] + 70])
+    setPosition('help_button', [SHIP_OFFSET[0] + 120, DISCARD_PILE_OFFSET[1] + 70])
 }
 
 function makePlanetsClickable()
@@ -851,19 +851,20 @@ function refreshUI()
     getImagePosition()
     setPositionFixedElements()
     let planet_markers = ['earth_marker', 'mars_marker', 'jupiter_marker', 'saturn_marker', 'uranus_marker', 'neptun_marker']
+    const planet_src = ['planet_grey', 'planet_red', 'planet_orange', 'planet_yellow', 'planet_green', 'planet_blue']
     for(let marker=0;marker<planet_markers.length;marker++){
         el = setPosition(planet_markers[marker], 
             [
                 SCALE*(PLANETS[marker][CURRENT_PLANET_POSITIONS[marker]][0] + MAINBOARD_OFFSET[0] + PLANET_POSITION_OFFSET[0]),
                 SCALE*(PLANETS[marker][CURRENT_PLANET_POSITIONS[marker]][1] + MAINBOARD_OFFSET[1] + PLANET_POSITION_OFFSET[1])
             ])
-        //TODO: change src el.style.border = ""
+        el.src = "pics/" + planet_src[marker] + ".png"
     }
 
     if(CURRENT_TURN.hasOwnProperty('destination') && CURRENT_PLANET_POSITIONS[CURRENT_TURN["destination"][0]] == CURRENT_TURN["destination"][1])
     {
         let current_planet_dest = document.getElementById(planet_markers[CURRENT_TURN["destination"][0]])
-        //TODO: change src current_planet_dest.style.border = "10px solid white"
+        current_planet_dest.src = "pics/" + planet_src[CURRENT_TURN["destination"][0]] + "_on.png"
     }
     if(SPACESHIP_POSITION.length == 2){
         setPosition('ship_marker',
