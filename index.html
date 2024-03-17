@@ -39,10 +39,10 @@
         <img id="marker_2" src="pics/councilor_pink.png" alt="marker_2" width="10px" position="absolute" style="display: none;">
         <img id="marker_3" src="pics/councilor_pink.png" alt="marker_3" width="10px" position="absolute" style="display: none;">
 
-        <div id="seat_0_container" class="full"><img id="seat_0" src="pics/0.png" alt="seat_0" width="70px" position="absolute" style="display: none;"></div>
-        <div id="seat_1_container" class="full"><img id="seat_1" src="pics/0.png" alt="seat_1" width="70px" position="absolute" style="display: none;"></div>
-        <div id="seat_2_container" class="full"><img id="seat_2" src="pics/0.png" alt="seat_2" width="70px" position="absolute" style="display: none;"></div>
-        <div id="seat_3_container" class="full"><img id="seat_3" src="pics/0.png" alt="seat_3" width="70px" position="absolute" style="display: none;"></div>
+        <div id="seat_0_container" class="full" ondrop="drop(event)" ondragover="allowDrop(event)"><img id="seat_0" src="pics/0.png" alt="seat_0" width="70px" position="absolute" style="display: none;"></div>
+        <div id="seat_1_container" class="full" ondrop="drop(event)" ondragover="allowDrop(event)"><img id="seat_1" src="pics/0.png" alt="seat_1" width="70px" position="absolute" style="display: none;"></div>
+        <div id="seat_2_container" class="full" ondrop="drop(event)" ondragover="allowDrop(event)"><img id="seat_2" src="pics/0.png" alt="seat_2" width="70px" position="absolute" style="display: none;"></div>
+        <div id="seat_3_container" class="full" ondrop="drop(event)" ondragover="allowDrop(event)"><img id="seat_3" src="pics/0.png" alt="seat_3" width="70px" position="absolute" style="display: none;"></div>
 
         <button id="new_game" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#new_game_modal" style="display: none;">New Game</button>
         <button id="reset_turn" type="button" class="btn btn-primary" onclick="reset_turn()" style="display: none;">Reset Turn</button>

@@ -2,8 +2,8 @@
 
 - make look nice
   - buttons
-  - handling of picking up passengers
-  - mark 1st class seats
+  - test handling of picking up passengers
+  - seat cards
   - win/loose
     - make standalone loosing/winning modal?
     - check loosing condition same as in rules
@@ -27,7 +27,6 @@
       - drop of passengers
     - requires async happening of event itself and next event
     - for replaying require skipping of animation
-  - use real images
   - Rule link (wait for finished rules)
   - Help text (extend)
 - refactor

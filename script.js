@@ -154,83 +154,7 @@ function onClickHex(planet, number)
     refreshUI()
 }
 
-function onClickPlanetPassenger(planet, number)
-{
-    if(NEXT_TURN_TYPE != PLAYER_TURN){
-        return
-    }
-    if(SPACESHIP_POSITION[0] != planet){
-        return
-    }
-    if(CURRENT_PLANET_POSITIONS[planet] != SPACESHIP_POSITION[1]){
-        return
-    }
-    if(number >= PLANET_PASSENGERS[planet].length)
-    {
-        return
-    }
-    let passenger = PLANET_PASSENGERS[planet][number]
-    if(!freeSeatAvailable(passenger)){
-        return
-    }
-    if(CURRENT_TURN.hasOwnProperty('active_passenger')){
-        if(CURRENT_TURN['active_passenger'] == number)
-        {
-            delete CURRENT_TURN.active_passenger
-            refreshUI()
-            return
-        }
-    }
-    CURRENT_TURN['active_passenger'] = number
-    refreshUI()
-}
 
-function onClickShipPassenger(seat)
-{
-    if(NEXT_TURN_TYPE != PLAYER_TURN){
-        return
-    }
-    if(SHIP_PASSENGERS[seat] != 0){
-        return
-    }
-    /*
-    if(CURRENT_TURN.hasOwnProperty('pick_up')){
-        for(let p=0; p<CURRENT_TURN['pick_up'].length; p++){
-            if(CURRENT_TURN['pick_up'][p][1] == seat){
-                CURRENT_TURN['pick_up'].splice(p, 1)
-                break
-            }
-        }
-    }*/
-    if(CURRENT_TURN.hasOwnProperty('active_passenger')){
-        let passenger = PLANET_PASSENGERS[SPACESHIP_POSITION[0]][CURRENT_TURN['active_passenger']]
-        if(passenger_is_first_class(passenger) && seat > 1)
-        {
-            return
-        }
-        if(! CURRENT_TURN.hasOwnProperty('pick_up')){
-            CURRENT_TURN['pick_up'] = []
-        }
-        for(let p=0; p<CURRENT_TURN['pick_up'].length; p++){
-            if(CURRENT_TURN['pick_up'][p][0] == CURRENT_TURN['active_passenger'])
-            {
-                CURRENT_TURN['pick_up'].splice(p, 1)
-                break
-            }
-        }
-        for(let p=0; p<CURRENT_TURN['pick_up'].length; p++){
-            if(CURRENT_TURN['pick_up'][p][1] == seat)
-            {
-                CURRENT_TURN['pick_up'].splice(p, 1)
-                break
-            }
-        }
-        CURRENT_TURN['pick_up'].push([CURRENT_TURN['active_passenger'], seat])
-        
-        delete CURRENT_TURN.active_passenger
-    }
-    refreshUI()
-}
 
 function reset_turn()
 {
@@ -253,7 +177,6 @@ function end_turn()
         {
             if(CURRENT_TURN.hasOwnProperty('pick_up'))
             {
-                //TODO: warning for active passenger not placed in ship
                 for(let p=0; p <CURRENT_TURN['pick_up'].length; p++)
                 {
                     SHIP_PASSENGERS[CURRENT_TURN['pick_up'][p][1]] = PLANET_PASSENGERS[SPACESHIP_POSITION[0]][CURRENT_TURN['pick_up'][p][0]]
@@ -542,6 +465,71 @@ function createHexSpaces()
     }
 }
 
+function drag(ev, planet, i){
+    ev.dataTransfer.setData("text", JSON.stringify([planet, i]))
+}
+
+function drop(ev){
+    console.log(ev.target.id[5])
+    var data = ev.dataTransfer.getData("text");
+    const dragged_passenger = JSON.parse(data);
+    const planet = dragged_passenger[0]
+    const number = dragged_passenger[1]
+    console.log(dragged_passenger)
+
+    if(NEXT_TURN_TYPE != PLAYER_TURN){
+        return
+    }
+    //by name convention
+    let seat = ev.target.id[5]
+    if(SHIP_PASSENGERS[seat] != 0){
+        return
+    }
+
+    if(SPACESHIP_POSITION[0] != planet){
+        return
+    }
+    if(CURRENT_PLANET_POSITIONS[planet] != SPACESHIP_POSITION[1]){
+        return
+    }
+    if(number >= PLANET_PASSENGERS[planet].length)
+    {
+        return
+    }
+    const passenger = PLANET_PASSENGERS[planet][number]
+    if(!freeSeatAvailable(passenger)){
+        return
+    }
+
+    if(passenger_is_first_class(passenger) && seat > 1)
+    {
+        return
+    }
+    if(! CURRENT_TURN.hasOwnProperty('pick_up')){
+        CURRENT_TURN['pick_up'] = []
+    }
+    for(let p=0; p<CURRENT_TURN['pick_up'].length; p++){
+        if(CURRENT_TURN['pick_up'][p][0] == number)
+        {
+            CURRENT_TURN['pick_up'].splice(p, 1)
+            break
+        }
+    }
+    for(let p=0; p<CURRENT_TURN['pick_up'].length; p++){
+        if(CURRENT_TURN['pick_up'][p][1] == seat)
+        {
+            CURRENT_TURN['pick_up'].splice(p, 1)
+            break
+        }
+    }
+    CURRENT_TURN['pick_up'].push([number, seat])
+    refreshUI()
+} 
+
+function allowDrop(ev){
+    ev.preventDefault();
+}
+
 function createPlanetPassengers()
 {
     let container = document.getElementById("clickable_areas")
@@ -551,9 +539,13 @@ function createPlanetPassengers()
             el.id = 'Passenger_' + i + '_Planet_' + planet
             el.style.width = SCALE*70 + "px" //TODO scale
             el.style.display = 'none'
+            el.draggable = true
             if(!EVENT_LISTENERS_CREATED){
-                el.addEventListener('click', function(){
-                    onClickPlanetPassenger(planet, i)});
+                el.addEventListener("dragstart", function(event){
+                    drag(event, planet, i)
+                })
+                //el.addEventListener('click', function(){
+                //    onClickPlanetPassenger(planet, i)});
             }
             el.src = "pics/back.jpg"
             container.appendChild(el);
@@ -720,12 +712,6 @@ function setPositionFixedElements()
                     if(CURRENT_TURN['pick_up'][p][0] == i && SPACESHIP_POSITION[0] == planet){
                         passenger.style.opacity = 0.5
                     }
-                }
-            }
-            if(CURRENT_TURN.hasOwnProperty('active_passenger'))
-            {
-                if(CURRENT_TURN['active_passenger'] == i && SPACESHIP_POSITION[0] == planet){
-                        passenger.style.opacity = 0.5
                 }
             }
 
