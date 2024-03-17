@@ -137,6 +137,9 @@ function onClickPlanet(planet){
 function onClickHex(planet, number)
 {
     if(NEXT_TURN_TYPE == PLAYER_TURN){
+        if(SPACESHIP_POSITION[0] == planet && SPACESHIP_POSITION[1] == number){
+            return
+        }
         CURRENT_TURN['destination'] = [planet, number]
         CURRENT_TURN['arrival_time'] = TIME_SPENT[0] + DISTANCES[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][planet][number]
     }
