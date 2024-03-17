@@ -454,7 +454,7 @@ function getImagePosition() {
         "top": 0
     } //image.getBoundingClientRect();
     PLANET_OFFSET[0] = rect.left + 710
-    PLANET_OFFSET[1] = rect.top
+    PLANET_OFFSET[1] = rect.top + 2
     MAINBOARD_OFFSET[0] = rect.left
     MAINBOARD_OFFSET[1] = rect.top
 
@@ -765,6 +765,14 @@ function setPositionFixedElements()
             ]
         )
         el2.src = "pics/" + SHIP_PASSENGERS[seat] +".png"
+        if(SHIP_PASSENGERS[seat] == 0)
+        {
+            el2.style.borderRadius = '5px';
+        }
+        else
+        {
+            el2.style.borderRadius = '0px';
+        }
         if(!EVENT_LISTENERS_CREATED){
             el2.addEventListener('click', function(){
                 onClickShipPassenger(seat)
@@ -869,10 +877,12 @@ function refreshUI()
     if(PASSENGER_DECK.length == 0)
     {
         drawing_pile.src = "pics/0.png"
+        drawing_pile.style.display = "none"
     }
     else
     {
         drawing_pile.src = "pics/back.png"
+        drawing_pile.style.display = 'block'
     }
     let drawing_pile_size = document.getElementById('drawing_pile_size')
     drawing_pile_size.textContent = PASSENGER_DECK.length
@@ -880,10 +890,12 @@ function refreshUI()
     if(DISCARD_PILE.length == 0)
     {
         discard_pile.src = "pics/0.png"
+        discard_pile.style.display = "none"
     }
     else
     {
         discard_pile.src = "pics/" + DISCARD_PILE[DISCARD_PILE.length - 1] + ".png"
+        discard_pile.style.display = 'block';
     }
     let discard_pile_size = document.getElementById('discard_pile_size')
     discard_pile_size.textContent = DISCARD_PILE.length
