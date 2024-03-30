@@ -1,13 +1,14 @@
 # TODOs
 
-- make look nice
-  - buttons
-  - test handling of picking up passengers
-  - seat cards
+- MVP
+  - buttons look nice
+  - background image
   - win/loose
-    - make standalone loosing/winning modal?
-    - check loosing condition same as in rules
-    - phrase loosing with planet names
+  - rules
+  - starting positions
+  - blocked
+    - seat cards like design
+- Advanced features
   - show events happening
     - end turn:
       - pick up passengers, move el from A to B multiple times
@@ -27,8 +28,12 @@
       - drop of passengers
     - requires async happening of event itself and next event
     - for replaying require skipping of animation
-  - Rule link (wait for finished rules)
-  - Help text (extend)
+  - Highscore
+    - submit daily challenge
+    - for each succeeded challenge, one chance
+  - show warning if we are travelling for too long
+  - show history
+  - load from text file
 - refactor
   - create and use getters/setters to get rid of array magics
   - state into one object
@@ -37,12 +42,3 @@
   - system tests (complete game)
   - unit tests for events
   - unit tests for missing clicks
-
-- Highscore
-  - submit daily challenge
-  - for each succeeded challenge, one chance
-- show warning if we are travelling for too long
-- show history
-- load from text file
-
-- Bugs

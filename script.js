@@ -20,6 +20,7 @@ const PLANETS = [EARTH_POSITIONS, MARS_POSITIONS, JUPITER_POSITIONS, SATURN_POSI
 const TU_POSITIONS = [[1,258.4],[1,235],[1,211.6],[1,188.2],[1,164.8],[1,141.4],[1,118],[1,94.6],[1,71.2],[1,47.8],[1,24.4],[1,1],[24.4,1],[47.8,1],[71.2,1],[94.6,1],[118,1],[141.4,1],[164.8,1],[188.2,1],[211.6,1],[235,1],[258.4,1],[281.8,1],[305.2,1],[328.6,1],[352,1],[375.4,1],[398.8,1],[422.2,1],[445.6,1],[469,1],[492.4,1],[515.8,1],[539.2,1],[562.6,1],[586,1],[609.4,1],[632.8,1],[656.2,1],[679.6,1],[679.6,24.4],[679.6,47.8],[679.6,71.2],[679.6,94.6],[679.6,118],[679.6,141.4],[679.6,164.8],[679.6,188.2],[679.6,211.6],[679.6,235],[679.6,258.4],[679.6,281.8],[679.6,305.2],[679.6,328.6],[679.6,352],[679.6,375.4],[679.6,398.8],[679.6,422.2],[679.6,445.6],[679.6,469],[656.2,469],[632.8,469],[609.4,469],[586,469],[562.6,469],[539.2,469],[515.8,469],[492.4,469],[469,469],[445.6,469],[422.2,469],[398.8,469],[375.4,469],[352,469]];
 let SCALE = 1
 
+const PLANET_MARKERS = ['earth_marker', 'mars_marker', 'jupiter_marker', 'saturn_marker', 'uranus_marker', 'neptun_marker']
 
 const HELPER_TEXT_CHOOSE_STARTING_POSITION = `Pick your starting position by clicking on one of the planet positions.<br>
 Afterwards click on the End Turn button.`
@@ -106,7 +107,7 @@ let SHIP_PASSENGERS = [0, 0, 0, 0]
 let CURRENT_TURN = {}
 let NEXT_TURN_TYPE = CHOOSE_STARTING_POSITION
 let HISTORY = []
-
+let ANIMATIONS_TO_BE_PERFORMED = []
 
 function onClickTimeSpace(tu)
 {
@@ -205,7 +206,6 @@ function end_turn()
     }
     CURRENT_TURN = {}
     perform_next_turn()
-    refreshUI()    
 }
 
 function new_game()
@@ -241,6 +241,14 @@ function setNextTurnType()
 
 function perform_next_turn()
 {
+    console.log(ANIMATIONS_TO_BE_PERFORMED.length)
+    if(ANIMATIONS_TO_BE_PERFORMED.length > 0){
+        perform_animation()
+        return
+    }
+    else{
+        refreshUI()
+    }
     try{
         setNextTurnType()
         if(NEXT_TURN_TYPE == ROTATION_TURN)
@@ -258,6 +266,7 @@ function perform_next_turn()
         else if(NEXT_TURN_TYPE == PLAYER_TURN)
         {
             perform_player_turn()
+            refreshUI()
         }
     }
     catch(error)
@@ -335,20 +344,101 @@ function perform_passenger_event()
     perform_next_turn()
 }
 
+function insertMoveAnimation(name_of_animation, current_position, next_position)
+{
+    const dynamicKeyframes = document.getElementById('dynamicKeyframes');
+    const keyframe = `
+    @keyframes ${name_of_animation} {
+        0% {
+        transform: translate(0, 0);
+        }
+        100% {
+        transform: translate(${next_position[0] - current_position[0]}px, ${next_position[1] - current_position[1]}px);
+        }
+    }
+    `;
+    dynamicKeyframes.sheet.insertRule(keyframe, 0);
+}
+
+function cleanKeyframes()
+{
+    const dynamicKeyframes = document.getElementById('dynamicKeyframes');
+    while (dynamicKeyframes.sheet.cssRules.length) {
+        dynamicKeyframes.sheet.deleteRule(0);
+    }
+}
+
+function perform_animation()
+{
+    cleanKeyframes()
+    let animation = ANIMATIONS_TO_BE_PERFORMED.shift()
+    if(animation["type"] == "MOVE"){
+        for(let i=0;i<animation["element_id"].length;i++){
+            insertMoveAnimation("MOVE_" + animation["element_id"][i], animation["current_position"][i], animation["next_position"][i])
+            const animatedImage = document.getElementById(animation["element_id"][i])
+            animatedImage.style.animation = 'MOVE_' + animation["element_id"][i] + ' 1s ease-in-out forwards'
+            const animationEndHandler = () => {
+                
+                const animatedImage = document.getElementById(animation["element_id"][i]);
+                animatedImage.removeEventListener('animationend', animationEndHandler);
+                // Remove animation
+                animatedImage.style.animation = '';
+                next_position = animation["next_position"][i]
+                current_position = animation["current_position"][i]
+                animatedImage.style.transform = `translate(${next_position[0] - current_position[0]}px, ${next_position[1] - current_position[1]}px)`
+                console.log("animation finished")
+                // Set new position
+                //only in one animation, waiting for all?
+                if(i==0){
+                    perform_next_turn()
+                }
+            }
+            animatedImage.addEventListener('animationend', animationEndHandler);
+        }
+    }
+}
+
 function perform_rotation_event()
 {
-    if(CURRENT_PLANET_POSITIONS[SPACESHIP_POSITION[0]] == SPACESHIP_POSITION[1]){
-        SPACESHIP_POSITION[1] = (SPACESHIP_POSITION[1] + 1) % PLANETS[SPACESHIP_POSITION[0]].length
-    }
+    ANIMATIONS_TO_BE_PERFORMED = []
     for(let planet=0;planet<CURRENT_PLANET_POSITIONS.length;planet++){
+        let animation = {
+            "type": "MOVE",
+            "element_id": [],
+            "current_position": [],
+            "next_position": []
+        }
+        
+        if(planet == SPACESHIP_POSITION[0] && CURRENT_PLANET_POSITIONS[SPACESHIP_POSITION[0]] == SPACESHIP_POSITION[1]){
+            animation["element_id"].push("ship_marker")
+            animation["current_position"].push(getShipPosition(SPACESHIP_POSITION))
+            SPACESHIP_POSITION[1] = (SPACESHIP_POSITION[1] + 1) % PLANETS[SPACESHIP_POSITION[0]].length
+            animation["next_position"].push(getShipPosition(SPACESHIP_POSITION))
+        }
+        animation["element_id"].push(PLANET_MARKERS[planet])
+        animation["current_position"].push(getPlanetPosition(planet, CURRENT_PLANET_POSITIONS[planet]))
         CURRENT_PLANET_POSITIONS[planet] = (CURRENT_PLANET_POSITIONS[planet] + 1) % PLANETS[planet].length
+        animation["next_position"].push(getPlanetPosition(planet, CURRENT_PLANET_POSITIONS[planet]))
+        ANIMATIONS_TO_BE_PERFORMED.push(animation)
     }
+    
+    
+    const current_position = getPositionOfTuMarker(NEXT_ROTATE_EVENT)
     let markers = [TIME_SPENT, NEXT_PASSENGER_EVENT, END_EVENT]
     let stack_position = markers.filter(function(arr){return arr[0] == NEXT_ROTATE_EVENT[0] + 10}).length
     NEXT_ROTATE_EVENT = [
         NEXT_ROTATE_EVENT[0] + 10, 
         stack_position
     ]
+    const next_position = getPositionOfTuMarker(NEXT_ROTATE_EVENT)
+    let animation = {
+        "type": "MOVE",
+        "element_id": ["rotate_marker"],
+        "current_position": [current_position],
+        "next_position": [next_position]
+    }
+    ANIMATIONS_TO_BE_PERFORMED.push(animation)
+    console.log(ANIMATIONS_TO_BE_PERFORMED)
     perform_next_turn()
 }
 
@@ -591,14 +681,24 @@ function moveTimeMarkers()
     }
 }
 
+function getPositionOfTuMarker(tu)
+{
+    let time_space = tu[0] % 75
+    return [
+        MAINBOARD_OFFSET[0] + TU_POSITIONS[time_space][0]*SCALE + TIME_MARKER_OFFSET[0]*SCALE,
+        MAINBOARD_OFFSET[1] + TU_POSITIONS[time_space][1]*SCALE - tu[1]*3*SCALE + TIME_MARKER_OFFSET[1]*SCALE
+    ]
+}
+
 function moveMarkerToTu(marker_name, tu)
 {
-    var time_space = tu[0] % 75
+    let position = getPositionOfTuMarker(tu)
     let time_marker = document.getElementById(marker_name);
-    time_marker.style.left = MAINBOARD_OFFSET[0] + TU_POSITIONS[time_space][0]*SCALE + TIME_MARKER_OFFSET[0]*SCALE + 'px'
-    time_marker.style.top = MAINBOARD_OFFSET[1] + TU_POSITIONS[time_space][1]*SCALE - tu[1]*3*SCALE + TIME_MARKER_OFFSET[1]*SCALE + 'px'
+    time_marker.style.left = position[0] + 'px'
+    time_marker.style.top = position[1] + 'px'
     time_marker.style.position = 'absolute';
     time_marker.style.display = 'block';
+    time_marker.style.transform = ''
     return time_marker
 }
 
@@ -803,9 +903,8 @@ function setPositionFixedElements()
 
 function makePlanetsClickable()
 {
-    let planet_markers = ['earth_marker', 'mars_marker', 'jupiter_marker', 'saturn_marker', 'uranus_marker', 'neptun_marker']
-    for(let marker=0;marker<planet_markers.length;marker++){
-        let el = document.getElementById(planet_markers[marker])
+    for(let marker=0;marker<PLANET_MARKERS.length;marker++){
+        let el = document.getElementById(PLANET_MARKERS[marker])
         if(!EVENT_LISTENERS_CREATED){
             el.addEventListener('click', function(){
                 onClickPlanet(marker)})
@@ -851,32 +950,41 @@ function set_pile_content()
     }
 }
 
+function getShipPosition(position)
+{
+    return [
+        SCALE*(MAINBOARD_OFFSET[0] + PLANETS[position[0]][position[1]][0] + SHIP_POSITION_OFFSET[0]),
+        SCALE*(MAINBOARD_OFFSET[1] + PLANETS[position[0]][position[1]][1] + SHIP_POSITION_OFFSET[1])
+    ]
+}
+
+function getPlanetPosition(planet, number)
+{
+    return [
+        SCALE*(PLANETS[planet][number][0] + MAINBOARD_OFFSET[0] + PLANET_POSITION_OFFSET[0]),
+        SCALE*(PLANETS[planet][number][1] + MAINBOARD_OFFSET[1] + PLANET_POSITION_OFFSET[1])
+    ]
+}
+
 function refreshUI()
 {
     getImagePosition()
     setPositionFixedElements()
-    let planet_markers = ['earth_marker', 'mars_marker', 'jupiter_marker', 'saturn_marker', 'uranus_marker', 'neptun_marker']
     const planet_src = ['planet_grey', 'planet_red', 'planet_orange', 'planet_yellow', 'planet_green', 'planet_blue']
-    for(let marker=0;marker<planet_markers.length;marker++){
-        el = setPosition(planet_markers[marker], 
-            [
-                SCALE*(PLANETS[marker][CURRENT_PLANET_POSITIONS[marker]][0] + MAINBOARD_OFFSET[0] + PLANET_POSITION_OFFSET[0]),
-                SCALE*(PLANETS[marker][CURRENT_PLANET_POSITIONS[marker]][1] + MAINBOARD_OFFSET[1] + PLANET_POSITION_OFFSET[1])
-            ])
+    for(let marker=0;marker<PLANET_MARKERS.length;marker++){
+        el = setPosition(PLANET_MARKERS[marker], getPlanetPosition(marker, CURRENT_PLANET_POSITIONS[marker]))
         el.src = "pics/" + planet_src[marker] + ".png"
+        el.style.transform = ''
     }
 
     if(CURRENT_TURN.hasOwnProperty('destination') && CURRENT_PLANET_POSITIONS[CURRENT_TURN["destination"][0]] == CURRENT_TURN["destination"][1])
     {
-        let current_planet_dest = document.getElementById(planet_markers[CURRENT_TURN["destination"][0]])
+        let current_planet_dest = document.getElementById(PLANET_MARKERS[CURRENT_TURN["destination"][0]])
         current_planet_dest.src = "pics/" + planet_src[CURRENT_TURN["destination"][0]] + "_on.png"
     }
     if(SPACESHIP_POSITION.length == 2){
-        setPosition('ship_marker',
-        [
-            SCALE*(MAINBOARD_OFFSET[0] + PLANETS[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][0] + SHIP_POSITION_OFFSET[0]),
-            SCALE*(MAINBOARD_OFFSET[1] + PLANETS[SPACESHIP_POSITION[0]][SPACESHIP_POSITION[1]][1] + SHIP_POSITION_OFFSET[1])
-        ])
+        el = setPosition('ship_marker', getShipPosition(SPACESHIP_POSITION))
+        el.style.transform = ''
     }
     
     let drawing_pile = document.getElementById('drawing_pile')
