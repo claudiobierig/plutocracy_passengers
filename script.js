@@ -466,63 +466,81 @@ function createHexSpaces()
 }
 
 function drag(ev, planet, i){
-    ev.dataTransfer.setData("text", JSON.stringify([planet, i]))
+    if(canTakeUpPassenger(planet, i)){
+        ev.dataTransfer.setData("text", JSON.stringify([planet, i]))
+        //let dragElement = document.getElementById('Passenger_' + i + '_Planet_' + planet)
+        //dragElement.style.borderColor = "red"
+        //dragElement.style.border = "solid"
+        //ev.dataTransfer.setDragImage(dragElement, 0, 0)
+    }
 }
 
-function drop(ev){
-    console.log(ev.target.id[5])
-    var data = ev.dataTransfer.getData("text");
-    const dragged_passenger = JSON.parse(data);
-    const planet = dragged_passenger[0]
-    const number = dragged_passenger[1]
-    console.log(dragged_passenger)
-
+function canTakeUpPassenger(planet, number){
     if(NEXT_TURN_TYPE != PLAYER_TURN){
-        return
+        return false
     }
-    //by name convention
-    let seat = ev.target.id[5]
-    if(SHIP_PASSENGERS[seat] != 0){
-        return
-    }
-
     if(SPACESHIP_POSITION[0] != planet){
-        return
+        return false
     }
     if(CURRENT_PLANET_POSITIONS[planet] != SPACESHIP_POSITION[1]){
-        return
+        return false
     }
     if(number >= PLANET_PASSENGERS[planet].length)
     {
-        return
+        return false
     }
     const passenger = PLANET_PASSENGERS[planet][number]
     if(!freeSeatAvailable(passenger)){
-        return
+        return false
     }
+    return true
+}
 
-    if(passenger_is_first_class(passenger) && seat > 1)
+function drop(ev){
+    var data = ev.dataTransfer.getData("text");
+    try{
+        const dragged_passenger = JSON.parse(data);
+    
+        const planet = dragged_passenger[0]
+        const number = dragged_passenger[1]
+
+        if(!canTakeUpPassenger(planet, number)){
+            return
+        }
+
+        //by name convention
+        let seat = ev.target.id[5]
+        if(SHIP_PASSENGERS[seat] != 0){
+            return
+        }
+        const passenger = PLANET_PASSENGERS[planet][number]
+        if(passenger_is_first_class(passenger) && seat > 1)
+        {
+            return
+        }
+        if(! CURRENT_TURN.hasOwnProperty('pick_up')){
+            CURRENT_TURN['pick_up'] = []
+        }
+        for(let p=0; p<CURRENT_TURN['pick_up'].length; p++){
+            if(CURRENT_TURN['pick_up'][p][0] == number)
+            {
+                CURRENT_TURN['pick_up'].splice(p, 1)
+                break
+            }
+        }
+        for(let p=0; p<CURRENT_TURN['pick_up'].length; p++){
+            if(CURRENT_TURN['pick_up'][p][1] == seat)
+            {
+                CURRENT_TURN['pick_up'].splice(p, 1)
+                break
+            }
+        }
+        CURRENT_TURN['pick_up'].push([number, seat])
+    }
+    catch(error)
     {
         return
     }
-    if(! CURRENT_TURN.hasOwnProperty('pick_up')){
-        CURRENT_TURN['pick_up'] = []
-    }
-    for(let p=0; p<CURRENT_TURN['pick_up'].length; p++){
-        if(CURRENT_TURN['pick_up'][p][0] == number)
-        {
-            CURRENT_TURN['pick_up'].splice(p, 1)
-            break
-        }
-    }
-    for(let p=0; p<CURRENT_TURN['pick_up'].length; p++){
-        if(CURRENT_TURN['pick_up'][p][1] == seat)
-        {
-            CURRENT_TURN['pick_up'].splice(p, 1)
-            break
-        }
-    }
-    CURRENT_TURN['pick_up'].push([number, seat])
     refreshUI()
 } 
 
@@ -544,8 +562,6 @@ function createPlanetPassengers()
                 el.addEventListener("dragstart", function(event){
                     drag(event, planet, i)
                 })
-                //el.addEventListener('click', function(){
-                //    onClickPlanetPassenger(planet, i)});
             }
             el.src = "pics/back.jpg"
             container.appendChild(el);
@@ -925,12 +941,12 @@ discard_pile.onmouseleave = function () {
 
 window.addEventListener('resize', handleResize);
 
-function handleMouseClick(event) {
+//function handleMouseClick(event) {
     // Get the mouse coordinates
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
+    //const mouseX = event.clientX;
+    //const mouseY = event.clientY;
 
     // Log the coordinates to the console (you can use them as needed)
-    console.log(`Mouse Click Position: X=${mouseX}, Y=${mouseY}`);
-}
-document.addEventListener('click', handleMouseClick);
+    //console.log(`Mouse Click Position: X=${mouseX}, Y=${mouseY}`);
+//}
+//document.addEventListener('click', handleMouseClick);
