@@ -176,6 +176,21 @@ function end_turn()
     {
         if(CURRENT_TURN.hasOwnProperty('destination'))
         {
+            let tu_animation = {
+                "type": "MOVE",
+                "element_id": ["time_marker"],
+                "current_position": [getPositionOfTuMarker(TIME_SPENT)],
+                "next_position": []
+            }
+            let markers = [NEXT_ROTATE_EVENT, NEXT_PASSENGER_EVENT, END_EVENT]
+            let stack_position = markers.filter(function(arr){return arr[0] == CURRENT_TURN['arrival_time']}).length
+            TIME_SPENT = [
+                CURRENT_TURN['arrival_time'], 
+                stack_position
+            ]
+            tu_animation["next_position"].push(getPositionOfTuMarker(TIME_SPENT))
+            ANIMATIONS_TO_BE_PERFORMED.push(tu_animation)
+
             if(CURRENT_TURN.hasOwnProperty('pick_up'))
             {
                 for(let p=0; p <CURRENT_TURN['pick_up'].length; p++)
@@ -188,15 +203,15 @@ function end_turn()
                 })
                 PLANET_PASSENGERS[SPACESHIP_POSITION[0]] = new_passengers
             }
-
+            let spaceship_animation = {
+                "type": "MOVE",
+                "element_id": ["ship_marker"],
+                "current_position": [getShipPosition(SPACESHIP_POSITION)],
+                "next_position": [getShipPosition(CURRENT_TURN['destination'])]
+            }
+            ANIMATIONS_TO_BE_PERFORMED.push(spaceship_animation)
             SPACESHIP_POSITION = CURRENT_TURN['destination']
-            let markers = [NEXT_ROTATE_EVENT, NEXT_PASSENGER_EVENT, END_EVENT]
-            let stack_position = markers.filter(function(arr){return arr[0] == CURRENT_TURN['arrival_time']}).length
-            TIME_SPENT = [
-                CURRENT_TURN['arrival_time'], 
-                stack_position
-            ]
-            
+
         //TODO: else warning
         }
     }
@@ -206,6 +221,7 @@ function end_turn()
     }
     CURRENT_TURN = {}
     perform_next_turn()
+    refreshUI()
 }
 
 function new_game()
@@ -242,13 +258,7 @@ function setNextTurnType()
 function perform_next_turn()
 {
     console.log(ANIMATIONS_TO_BE_PERFORMED.length)
-    if(ANIMATIONS_TO_BE_PERFORMED.length > 0){
-        perform_animation()
-        return
-    }
-    else{
-        refreshUI()
-    }
+    
     try{
         setNextTurnType()
         if(NEXT_TURN_TYPE == ROTATION_TURN)
@@ -266,7 +276,6 @@ function perform_next_turn()
         else if(NEXT_TURN_TYPE == PLAYER_TURN)
         {
             perform_player_turn()
-            refreshUI()
         }
     }
     catch(error)
@@ -385,12 +394,12 @@ function perform_animation()
                 animatedImage.style.animation = '';
                 next_position = animation["next_position"][i]
                 current_position = animation["current_position"][i]
-                animatedImage.style.transform = `translate(${next_position[0] - current_position[0]}px, ${next_position[1] - current_position[1]}px)`
+                //HERE
+                animatedImage.style.left = next_position[0] + "px"
+                animatedImage.style.top = next_position[1] + "px"
                 console.log("animation finished")
-                // Set new position
-                //only in one animation, waiting for all?
                 if(i==0){
-                    perform_next_turn()
+                    refreshUI()
                 }
             }
             animatedImage.addEventListener('animationend', animationEndHandler);
@@ -400,9 +409,24 @@ function perform_animation()
 
 function perform_rotation_event()
 {
-    ANIMATIONS_TO_BE_PERFORMED = []
+    const current_position = getPositionOfTuMarker(NEXT_ROTATE_EVENT)
+    let markers = [TIME_SPENT, NEXT_PASSENGER_EVENT, END_EVENT]
+    let stack_position = markers.filter(function(arr){return arr[0] == NEXT_ROTATE_EVENT[0] + 10}).length
+    NEXT_ROTATE_EVENT = [
+        NEXT_ROTATE_EVENT[0] + 10, 
+        stack_position
+    ]
+    const next_position = getPositionOfTuMarker(NEXT_ROTATE_EVENT)
+    let animation = {
+        "type": "MOVE",
+        "element_id": ["rotate_marker"],
+        "current_position": [current_position],
+        "next_position": [next_position]
+    }
+    ANIMATIONS_TO_BE_PERFORMED.push(animation)
+
     for(let planet=0;planet<CURRENT_PLANET_POSITIONS.length;planet++){
-        let animation = {
+        animation = {
             "type": "MOVE",
             "element_id": [],
             "current_position": [],
@@ -421,24 +445,6 @@ function perform_rotation_event()
         animation["next_position"].push(getPlanetPosition(planet, CURRENT_PLANET_POSITIONS[planet]))
         ANIMATIONS_TO_BE_PERFORMED.push(animation)
     }
-    
-    
-    const current_position = getPositionOfTuMarker(NEXT_ROTATE_EVENT)
-    let markers = [TIME_SPENT, NEXT_PASSENGER_EVENT, END_EVENT]
-    let stack_position = markers.filter(function(arr){return arr[0] == NEXT_ROTATE_EVENT[0] + 10}).length
-    NEXT_ROTATE_EVENT = [
-        NEXT_ROTATE_EVENT[0] + 10, 
-        stack_position
-    ]
-    const next_position = getPositionOfTuMarker(NEXT_ROTATE_EVENT)
-    let animation = {
-        "type": "MOVE",
-        "element_id": ["rotate_marker"],
-        "current_position": [current_position],
-        "next_position": [next_position]
-    }
-    ANIMATIONS_TO_BE_PERFORMED.push(animation)
-    console.log(ANIMATIONS_TO_BE_PERFORMED)
     perform_next_turn()
 }
 
@@ -698,7 +704,6 @@ function moveMarkerToTu(marker_name, tu)
     time_marker.style.top = position[1] + 'px'
     time_marker.style.position = 'absolute';
     time_marker.style.display = 'block';
-    time_marker.style.transform = ''
     return time_marker
 }
 
@@ -968,13 +973,16 @@ function getPlanetPosition(planet, number)
 
 function refreshUI()
 {
+    if(ANIMATIONS_TO_BE_PERFORMED.length > 0){
+        perform_animation()
+        return
+    }
     getImagePosition()
     setPositionFixedElements()
     const planet_src = ['planet_grey', 'planet_red', 'planet_orange', 'planet_yellow', 'planet_green', 'planet_blue']
     for(let marker=0;marker<PLANET_MARKERS.length;marker++){
         el = setPosition(PLANET_MARKERS[marker], getPlanetPosition(marker, CURRENT_PLANET_POSITIONS[marker]))
         el.src = "pics/" + planet_src[marker] + ".png"
-        el.style.transform = ''
     }
 
     if(CURRENT_TURN.hasOwnProperty('destination') && CURRENT_PLANET_POSITIONS[CURRENT_TURN["destination"][0]] == CURRENT_TURN["destination"][1])
@@ -984,7 +992,6 @@ function refreshUI()
     }
     if(SPACESHIP_POSITION.length == 2){
         el = setPosition('ship_marker', getShipPosition(SPACESHIP_POSITION))
-        el.style.transform = ''
     }
     
     let drawing_pile = document.getElementById('drawing_pile')
