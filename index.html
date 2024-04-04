@@ -29,12 +29,9 @@
         <img id="ship_marker" src="pics/ship_pink.png" alt="ship_marker" width="22px" position="absolute" style="display: none;">
 
         <img id="drawing_pile" src="pics/back.png" alt="drawing_pile" width="70px" onmouseover="show('drawing_pile_content')" position="absolute" style="display: none;">
-        <div class="circle-background" id="drawing_pile_size" position="absolute" style="display: none;">18</div>
         
         <img id="discard_pile" src="pics/empty.png" alt="discard_pile" width="70px" onmouseover="show('discard_pile_content')" position="absolute" style="display: none;">
-        <div class="circle-background" id="discard_pile_size" position="absolute">0</div>
         
-
         <img id="marker_0" src="pics/councilor_pink_large.png" alt="marker_0" width="10px" position="absolute" style="display: none;">
         <img id="marker_1" src="pics/councilor_pink_large.png" alt="marker_1" width="10px" position="absolute" style="display: none;">
         <img id="marker_2" src="pics/councilor_pink.png" alt="marker_2" width="10px" position="absolute" style="display: none;">
@@ -89,6 +86,11 @@
             <img id="drawing_pile_content_16" src="pics/16.png">
             <img id="drawing_pile_content_17" src="pics/17.png">
             <img id="drawing_pile_content_18" src="pics/18.png">
+        </div>
+        <div id="animation_container"></div>
+        <div id="top_layer">
+            <div class="circle-background" id="drawing_pile_size" position="absolute" style="display: none;">18</div>
+            <div class="circle-background" id="discard_pile_size" position="absolute" style="display: none;">0</div>
         </div>
         <div class="modal fade" id="new_game_modal" tabindex="-1" aria-labelledby="start_new_game_modal_title" aria-hidden="true">
             <div class="modal-dialog">

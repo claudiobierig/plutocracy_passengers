@@ -176,6 +176,27 @@ function end_turn()
     {
         if(CURRENT_TURN.hasOwnProperty('destination'))
         {
+            if(CURRENT_TURN.hasOwnProperty('pick_up'))
+            {
+                for(let p=0; p <CURRENT_TURN['pick_up'].length; p++)
+                {
+                    SHIP_PASSENGERS[CURRENT_TURN['pick_up'][p][1]] = PLANET_PASSENGERS[SPACESHIP_POSITION[0]][CURRENT_TURN['pick_up'][p][0]]
+                    PLANET_PASSENGERS[SPACESHIP_POSITION[0]][CURRENT_TURN['pick_up'][p][0]] = 0
+                }
+                let animation = {
+                    "type": "pickup_passenger",
+                    "passengers": CURRENT_TURN['pick_up'],
+                    "planet": SPACESHIP_POSITION[0],
+                    "planet_passengers": PLANET_PASSENGERS[SPACESHIP_POSITION[0]]
+                }
+                ANIMATIONS_TO_BE_PERFORMED.push(animation)
+                
+                let new_passengers = PLANET_PASSENGERS[SPACESHIP_POSITION[0]].filter(function(p){
+                    return p != 0
+                })
+                PLANET_PASSENGERS[SPACESHIP_POSITION[0]] = new_passengers
+            }
+
             let tu_animation = {
                 "type": "MOVE",
                 "element_id": ["time_marker"],
@@ -191,18 +212,6 @@ function end_turn()
             tu_animation["next_position"].push(getPositionOfTuMarker(TIME_SPENT))
             ANIMATIONS_TO_BE_PERFORMED.push(tu_animation)
 
-            if(CURRENT_TURN.hasOwnProperty('pick_up'))
-            {
-                for(let p=0; p <CURRENT_TURN['pick_up'].length; p++)
-                {
-                    SHIP_PASSENGERS[CURRENT_TURN['pick_up'][p][1]] = PLANET_PASSENGERS[SPACESHIP_POSITION[0]][CURRENT_TURN['pick_up'][p][0]]
-                    PLANET_PASSENGERS[SPACESHIP_POSITION[0]][CURRENT_TURN['pick_up'][p][0]] = 0
-                }
-                let new_passengers = PLANET_PASSENGERS[SPACESHIP_POSITION[0]].filter(function(p){
-                    return p != 0
-                })
-                PLANET_PASSENGERS[SPACESHIP_POSITION[0]] = new_passengers
-            }
             let spaceship_animation = {
                 "type": "MOVE",
                 "element_id": ["ship_marker"],
@@ -318,14 +327,33 @@ function draw_passenger(planet)
         if(DISCARD_PILE.every(function(passenger){
             return passenger_is_for_planet(passenger, planet)
         })){
+            ANIMATIONS_TO_BE_PERFORMED.push(
+                {
+                    "type": "all_passengers_for_planet",
+                    "planet": planet
+                }
+            )
             return 0
         }
+        ANIMATIONS_TO_BE_PERFORMED.push(
+            {"type": "flip_discard_pile"}
+        )
+        ANIMATIONS_TO_BE_PERFORMED.push(
+            {"type": "shuffle"}
+        )
         PASSENGER_DECK = DISCARD_PILE
         DISCARD_PILE = []
         shuffle(PASSENGER_DECK)
     }
     passenger = PASSENGER_DECK.pop()
     if(passenger_is_for_planet(passenger, planet)){
+        ANIMATIONS_TO_BE_PERFORMED.push(
+            {
+                "type": "draw_passenger_discard_pile",
+                "passenger": passenger,
+                "cardsLeftInPassengerDeck": PASSENGER_DECK.length
+            }
+        )
         DISCARD_PILE.push(passenger)
         return draw_passenger(planet)
     }
@@ -334,6 +362,25 @@ function draw_passenger(planet)
 
 function perform_passenger_event()
 {
+    if(NEXT_TURN_TYPE != CHOOSE_STARTING_POSITION)
+    {
+        const current_position = getPositionOfTuMarker(NEXT_PASSENGER_EVENT)
+        let markers = [TIME_SPENT, NEXT_ROTATE_EVENT, END_EVENT]
+        let stack_position = markers.filter(function(arr){return arr[0] == NEXT_PASSENGER_EVENT[0] + 20}).length
+        NEXT_PASSENGER_EVENT = [
+            NEXT_PASSENGER_EVENT[0] + 20, 
+            stack_position
+        ]
+        const next_position = getPositionOfTuMarker(NEXT_PASSENGER_EVENT)
+        let animation = {
+            "type": "MOVE",
+            "element_id": ["passenger_marker"],
+            "current_position": [current_position],
+            "next_position": [next_position]
+        }
+        ANIMATIONS_TO_BE_PERFORMED.push(animation)
+    }
+
     for(let planet=0;planet<CURRENT_PLANET_POSITIONS.length;planet++){
         if(PLANET_PASSENGERS[planet].length >=3)
         {
@@ -341,15 +388,18 @@ function perform_passenger_event()
         }
         passenger = draw_passenger(planet)
         if(passenger != 0){
+            ANIMATIONS_TO_BE_PERFORMED.push(
+                {
+                    "type": "draw_passenger",
+                    "planet": planet,
+                    "passenger": passenger,
+                    "planet_position": PLANET_PASSENGERS[planet].length,
+                    "cardsLeftInPassengerDeck": PASSENGER_DECK.length
+                }
+            )
             PLANET_PASSENGERS[planet].push(passenger)
         }
     }
-    let markers = [TIME_SPENT, NEXT_ROTATE_EVENT, END_EVENT]
-    let stack_position = markers.filter(function(arr){return arr[0] == NEXT_PASSENGER_EVENT[0] + 20}).length
-    NEXT_PASSENGER_EVENT = [
-        NEXT_PASSENGER_EVENT[0] + 20, 
-        stack_position
-    ]
     perform_next_turn()
 }
 
@@ -377,33 +427,107 @@ function cleanKeyframes()
     }
 }
 
+function move(element_id, current_position, next_position, onAnimationEnd)
+{
+    insertMoveAnimation("MOVE_" + element_id, current_position, next_position)
+    const animatedImage = document.getElementById(element_id)
+    animatedImage.style.animation = 'MOVE_' + element_id + ' 1s ease-in-out forwards'
+    const animationEndHandler = () => {
+        
+        const animatedImage = document.getElementById(element_id);
+        animatedImage.removeEventListener('animationend', animationEndHandler);
+        animatedImage.style.animation = '';
+        animatedImage.style.left = next_position[0] + "px"
+        animatedImage.style.top = next_position[1] + "px"
+        onAnimationEnd()
+    }
+    animatedImage.addEventListener('animationend', animationEndHandler);
+}
+
+function moveMultipleElements(element_ids, current_positions, next_positions, onAnimationEnd)
+{
+    for(let i=0;i<element_ids.length;i++){
+        move(
+            element_ids[i],
+            current_positions[i],
+            next_positions[i],
+            () => {
+                if(i==0){
+                    onAnimationEnd()
+                }
+            }
+        )
+    }
+}
+
 function perform_animation()
 {
     cleanKeyframes()
     let animation = ANIMATIONS_TO_BE_PERFORMED.shift()
     if(animation["type"] == "MOVE"){
-        for(let i=0;i<animation["element_id"].length;i++){
-            insertMoveAnimation("MOVE_" + animation["element_id"][i], animation["current_position"][i], animation["next_position"][i])
-            const animatedImage = document.getElementById(animation["element_id"][i])
-            animatedImage.style.animation = 'MOVE_' + animation["element_id"][i] + ' 1s ease-in-out forwards'
-            const animationEndHandler = () => {
-                
-                const animatedImage = document.getElementById(animation["element_id"][i]);
-                animatedImage.removeEventListener('animationend', animationEndHandler);
-                // Remove animation
-                animatedImage.style.animation = '';
-                next_position = animation["next_position"][i]
-                current_position = animation["current_position"][i]
-                //HERE
-                animatedImage.style.left = next_position[0] + "px"
-                animatedImage.style.top = next_position[1] + "px"
-                console.log("animation finished")
-                if(i==0){
-                    refreshUI()
-                }
+        moveMultipleElements(animation["element_id"], animation["current_position"], animation["next_position"], refreshUI)
+    }
+    else if(animation["type"] == "shuffle")
+    {
+        const dynamicKeyframes = document.getElementById('dynamicKeyframes');
+        const keyframe = `@keyframes shuffleAnimation {
+            0% {
+              transform: rotateX(0deg);
             }
-            animatedImage.addEventListener('animationend', animationEndHandler);
+            25% {
+              transform: rotateX(180deg);
+            }
+            50% {
+              transform: rotateX(0deg);
+            }
+            75% {
+              transform: rotateX(180deg);
+            }
+            100% {
+              transform: rotateX(0deg);
+            }
+          }`
+        dynamicKeyframes.sheet.insertRule(keyframe, 0);
+        let drawing_pile = document.getElementById("drawing_pile")
+        drawing_pile.style.animation = 'shuffleAnimation 3s ease-in-out'
+        const animationEndHandler = () => {
+                
+            const animatedImage = document.getElementById("drawing_pile");
+            animatedImage.removeEventListener('animationend', animationEndHandler);
+            animatedImage.style.animation = '';
+            
+            refreshUI()
         }
+        drawing_pile.addEventListener('animationend', animationEndHandler);
+    }
+    else if(animation["type"] == "draw_passenger")
+    {
+        refreshUI()
+    }
+    else if(animation["type"] == "draw_passenger_discard_pile")
+    {
+        refreshUI()
+    }
+    else if(animation["type"] == "pickup_passenger")
+    {
+        refreshUI()
+    }
+    else if(animation["type"] == "drop_of_passenger")
+    {
+        refreshUI()
+    }
+    else if(animation["type"] == "all_passengers_for_planet")
+    {
+        refreshUI()
+    }
+    else if(animation["type"] == "flip_discard_pile")
+    {
+        refreshUI()
+    }
+    else
+    {
+        //Not implement yet
+        refreshUI()
     }
 }
 
@@ -458,14 +582,20 @@ function perform_player_turn()
     //only drop of passengers, rest will be done by player
     const planet = SPACESHIP_POSITION[0]
     if(CURRENT_PLANET_POSITIONS[planet] == SPACESHIP_POSITION[1]){
+        const animation = {
+            "type": "drop_of_passenger",
+            "seats": []
+        }
         for(let seat = 0; seat < SHIP_PASSENGERS.length; seat++)
         {
             const passenger = SHIP_PASSENGERS[seat]
             if(passenger_is_for_planet(passenger, planet)){
+                animation["seats"].push(seat)
                 DISCARD_PILE.push(passenger)
                 SHIP_PASSENGERS[seat] = 0
             }
         }
+        ANIMATIONS_TO_BE_PERFORMED.push(animation)
     }
 }
 
@@ -559,6 +689,74 @@ function createHexSpaces()
             container.appendChild(newDiv2);
         }
     }
+}
+
+function createFlippableCard(position, passenger, id, onTransitionEnd)
+{
+    let card = document.createElement('div');
+    card.id = id
+    card.className = 'card'
+    card.style.left = position[0] + "px"
+    card.style.top = position[1] + "px"
+    let container = document.getElementById("animation_container")
+    container.appendChild(card)
+    let card_inner = document.createElement('div');
+    card_inner.className = 'card-inner'
+    card_inner.addEventListener('transitionend', onTransitionEnd);
+    card.appendChild(card_inner)
+    let card_front = document.createElement('div')
+    card_front.className = 'card-front'
+    card_inner.appendChild(card_front)
+    let front_image = document.createElement('img')
+    front_image.src = "pics/back.png"
+    card_front.appendChild(front_image)
+    let card_back = document.createElement('div')
+    card_back.className = 'card-back'
+    card_inner.appendChild(card_back)
+    let back_image = document.createElement('img')
+    back_image.src = "pics/" + passenger + ".png"
+    card_back.appendChild(back_image)
+    return card
+}
+
+function flipCard(el_id)
+{
+    let card = document.getElementById(el_id)
+    card.classList.toggle('flipped')
+}
+
+function updatePassengerDeck(cardsLeftInPassengerDeck)
+{
+    let drawing_pile = document.getElementById("drawing_pile")
+    if(cardsLeftInPassengerDeck == 0)
+    {
+        
+        drawing_pile.src = "pics/0.png"
+        drawing_pile.style.display = "none"
+    }
+    else
+    {
+        drawing_pile.src = "pics/back.png"
+        drawing_pile.style.display = "block"
+    }
+    let drawing_pile_size = document.getElementById("drawing_pile_size")
+    drawing_pile_size.textContent = cardsLeftInPassengerDeck
+}
+
+function updateDiscardPile(cardsOnDiscardPile, passenger){
+    let discard_pile = document.getElementById('discard_pile')
+    if(cardsOnDiscardPile == 0)
+    {
+        discard_pile.src = "pics/0.png"
+        discard_pile.style.display = "none"
+    }
+    else
+    {
+        discard_pile.src = "pics/" + passenger + ".png"
+        discard_pile.style.display = 'block';
+    }
+    let discard_pile_size = document.getElementById('discard_pile_size')
+    discard_pile_size.textContent = cardsOnDiscardPile
 }
 
 function drag(ev, planet, i){
@@ -754,7 +952,7 @@ function setup(seed, difficulty, starting_position)
     SPACESHIP_POSITION = []
     TIME_SPENT = [0,0]
     NEXT_ROTATE_EVENT = [10, 0]
-    NEXT_PASSENGER_EVENT = [0, 0]
+    NEXT_PASSENGER_EVENT = [20, 0]
     PASSENGER_DECK = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
     DISCARD_PILE = []
     PLANET_PASSENGERS = [[], [], [], [], [], []]
@@ -993,33 +1191,9 @@ function refreshUI()
     if(SPACESHIP_POSITION.length == 2){
         el = setPosition('ship_marker', getShipPosition(SPACESHIP_POSITION))
     }
-    
-    let drawing_pile = document.getElementById('drawing_pile')
-    if(PASSENGER_DECK.length == 0)
-    {
-        drawing_pile.src = "pics/0.png"
-        drawing_pile.style.display = "none"
-    }
-    else
-    {
-        drawing_pile.src = "pics/back.png"
-        drawing_pile.style.display = 'block'
-    }
-    let drawing_pile_size = document.getElementById('drawing_pile_size')
-    drawing_pile_size.textContent = PASSENGER_DECK.length
-    let discard_pile = document.getElementById('discard_pile')
-    if(DISCARD_PILE.length == 0)
-    {
-        discard_pile.src = "pics/0.png"
-        discard_pile.style.display = "none"
-    }
-    else
-    {
-        discard_pile.src = "pics/" + DISCARD_PILE[DISCARD_PILE.length - 1] + ".png"
-        discard_pile.style.display = 'block';
-    }
-    let discard_pile_size = document.getElementById('discard_pile_size')
-    discard_pile_size.textContent = DISCARD_PILE.length
+
+    updatePassengerDeck(PASSENGER_DECK.length)
+    updateDiscardPile(DISCARD_PILE.length, DISCARD_PILE[DISCARD_PILE.length - 1])
     set_pile_content()
 
     moveTimeMarkers()
@@ -1040,7 +1214,13 @@ window.onload = function () {
     refreshUI()
     EVENT_LISTENERS_CREATED = true
     setNextTurnType()
-    $('#new_game_modal').modal('show');
+    //$('#new_game_modal').modal('show');
+
+    //TODO
+    //createFlippableCard(DRAWING_PILE_OFFSET, 4, "test", function(){ console.log("transition finished")})
+    //flipCard("test")
+    //moveCard()
+
 };
 
 let drawing_pile = document.getElementById("drawing_pile");
@@ -1056,12 +1236,12 @@ discard_pile.onmouseleave = function () {
 
 window.addEventListener('resize', handleResize);
 
-//function handleMouseClick(event) {
+function handleMouseClick(event) {
     // Get the mouse coordinates
-    //const mouseX = event.clientX;
-    //const mouseY = event.clientY;
+    const mouseX = event.clientX;
+    const mouseY = event.clientY;
 
     // Log the coordinates to the console (you can use them as needed)
-    //console.log(`Mouse Click Position: X=${mouseX}, Y=${mouseY}`);
-//}
-//document.addEventListener('click', handleMouseClick);
+    console.log(`Mouse Click Position: X=${mouseX}, Y=${mouseY}`);   
+}
+document.addEventListener('click', handleMouseClick);
