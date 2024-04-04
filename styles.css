@@ -128,7 +128,7 @@ footer {
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
-    transition: transform 0.5s;
+    transition: transform 2s ease-in-out;
 }
 
 .card.flipped .card-inner {
@@ -149,4 +149,22 @@ footer {
 
 .card-back {
     transform: rotateY(180deg);
+}
+
+@keyframes shuffleAnimation {
+    0% {
+      transform: rotateX(0deg);
+    }
+    25% {
+      transform: rotateX(180deg);
+    }
+    50% {
+      transform: rotateX(0deg);
+    }
+    75% {
+      transform: rotateX(180deg);
+    }
+    100% {
+      transform: rotateX(0deg);
+    }
 }

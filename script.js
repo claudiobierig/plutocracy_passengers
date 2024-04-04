@@ -29,6 +29,7 @@ const HELPER_TEXT_PLAYER_TURN = `1) Pick up passengers.<br>
 3) If you want to spent additional TU, click on the corresponding space.`
 
 let EVENT_LISTENERS_CREATED = false
+let MOVE_KEYFRAME_COUNT = 0
 
 /*
 const EARTH_COORDS = [[0, -2], [0, 2]]
@@ -425,15 +426,19 @@ function cleanKeyframes()
     while (dynamicKeyframes.sheet.cssRules.length) {
         dynamicKeyframes.sheet.deleteRule(0);
     }
+    MOVE_KEYFRAME_COUNT = 0
 }
 
 function move(element_id, current_position, next_position, onAnimationEnd)
 {
-    insertMoveAnimation("MOVE_" + element_id, current_position, next_position)
+    
+    const keyframe_name = "MOVE_" + MOVE_KEYFRAME_COUNT
+    MOVE_KEYFRAME_COUNT = MOVE_KEYFRAME_COUNT + 1
+    insertMoveAnimation(keyframe_name, current_position, next_position)
     const animatedImage = document.getElementById(element_id)
-    animatedImage.style.animation = 'MOVE_' + element_id + ' 1s ease-in-out forwards'
+    animatedImage.style.animation = keyframe_name + ' 1s ease-in-out forwards'
     const animationEndHandler = () => {
-        
+        console.log("move end")
         const animatedImage = document.getElementById(element_id);
         animatedImage.removeEventListener('animationend', animationEndHandler);
         animatedImage.style.animation = '';
@@ -452,7 +457,9 @@ function moveMultipleElements(element_ids, current_positions, next_positions, on
             current_positions[i],
             next_positions[i],
             () => {
+                console.log("moveMultipleElements End")
                 if(i==0){
+                    console.log("i==0")
                     onAnimationEnd()
                 }
             }
@@ -460,49 +467,64 @@ function moveMultipleElements(element_ids, current_positions, next_positions, on
     }
 }
 
+function animateShuffle()
+{
+    let drawing_pile = document.getElementById("drawing_pile")
+    drawing_pile.style.animation = 'shuffleAnimation 3s ease-in-out'
+    const animationEndHandler = () => {
+            
+        const animatedImage = document.getElementById("drawing_pile");
+        animatedImage.removeEventListener('animationend', animationEndHandler);
+        animatedImage.style.animation = '';
+        
+        refreshUI()
+    }
+    drawing_pile.addEventListener('animationend', animationEndHandler);
+}
+
 function perform_animation()
 {
-    cleanKeyframes()
     let animation = ANIMATIONS_TO_BE_PERFORMED.shift()
     if(animation["type"] == "MOVE"){
         moveMultipleElements(animation["element_id"], animation["current_position"], animation["next_position"], refreshUI)
+        return
     }
     else if(animation["type"] == "shuffle")
     {
-        const dynamicKeyframes = document.getElementById('dynamicKeyframes');
-        const keyframe = `@keyframes shuffleAnimation {
-            0% {
-              transform: rotateX(0deg);
-            }
-            25% {
-              transform: rotateX(180deg);
-            }
-            50% {
-              transform: rotateX(0deg);
-            }
-            75% {
-              transform: rotateX(180deg);
-            }
-            100% {
-              transform: rotateX(0deg);
-            }
-          }`
-        dynamicKeyframes.sheet.insertRule(keyframe, 0);
-        let drawing_pile = document.getElementById("drawing_pile")
-        drawing_pile.style.animation = 'shuffleAnimation 3s ease-in-out'
-        const animationEndHandler = () => {
-                
-            const animatedImage = document.getElementById("drawing_pile");
-            animatedImage.removeEventListener('animationend', animationEndHandler);
-            animatedImage.style.animation = '';
-            
-            refreshUI()
-        }
-        drawing_pile.addEventListener('animationend', animationEndHandler);
+        animateShuffle()
     }
     else if(animation["type"] == "draw_passenger")
     {
-        refreshUI()
+        console.log("animate draw passenger")
+        /*
+        {
+                    "type": "draw_passenger",
+                    "planet": planet,
+                    "passenger": passenger,
+                    "planet_position": PLANET_PASSENGERS[planet].length,
+                    "cardsLeftInPassengerDeck": PASSENGER_DECK.length
+                }
+                */
+        const card_name = "draw_passenger_" + animation["passenger"]
+        console.log(card_name)
+        createFlippableCard(DRAWING_PILE_OFFSET, animation["passenger"], card_name, () => {
+            console.log("flip finished")
+            const passenger_element = document.getElementById('Passenger_' + animation["planet_position"] + '_Planet_' + animation["planet"])
+            let next_position = [passenger_element.style.left, passenger_element.style.top]
+            move(card_name, DRAWING_PILE_OFFSET, next_position, () => {
+                console.log("move finished")
+                let passenger_element = document.getElementById('Passenger_' + animation["planet_position"] + '_Planet_' + animation["planet"])
+                passenger_element.src = "pics/" + animation["passenger"] + ".png"
+                passenger_element.style.display = 'block';
+                let card = document.getElementById(card_name)
+                card.remove()
+                refreshUI() 
+            })
+        })
+        updatePassengerDeck(animation["cardsLeftInPassengerDeck"])
+        //TODO: remove race condition. maybe just a 1 is enough and we only need to do this async so the event handler is registered?
+        setTimeout(()=>{flipCard(card_name)}, 100);
+        
     }
     else if(animation["type"] == "draw_passenger_discard_pile")
     {
@@ -698,9 +720,11 @@ function createFlippableCard(position, passenger, id, onTransitionEnd)
     card.className = 'card'
     card.style.left = position[0] + "px"
     card.style.top = position[1] + "px"
+    card.style.display = "block"
     let container = document.getElementById("animation_container")
     container.appendChild(card)
     let card_inner = document.createElement('div');
+    card_inner.id = "inner_" + id
     card_inner.className = 'card-inner'
     card_inner.addEventListener('transitionend', onTransitionEnd);
     card.appendChild(card_inner)
@@ -721,6 +745,7 @@ function createFlippableCard(position, passenger, id, onTransitionEnd)
 
 function flipCard(el_id)
 {
+    console.log("flip " + el_id)
     let card = document.getElementById(el_id)
     card.classList.toggle('flipped')
 }
@@ -961,6 +986,7 @@ function setup(seed, difficulty, starting_position)
     shuffle(PASSENGER_DECK);
     perform_passenger_event()
     setHelperText(HELPER_TEXT_CHOOSE_STARTING_POSITION)
+    ANIMATIONS_TO_BE_PERFORMED = []
     refreshUI()
 }
 
@@ -1171,10 +1197,12 @@ function getPlanetPosition(planet, number)
 
 function refreshUI()
 {
+    console.log("refreshUI")
     if(ANIMATIONS_TO_BE_PERFORMED.length > 0){
         perform_animation()
         return
     }
+    cleanKeyframes()
     getImagePosition()
     setPositionFixedElements()
     const planet_src = ['planet_grey', 'planet_red', 'planet_orange', 'planet_yellow', 'planet_green', 'planet_blue']
@@ -1211,13 +1239,15 @@ window.onload = function () {
     makePlanetsClickable()
     createPlanetPassengers()
     setup(Date.now(), 120, 'Standard')
+    ANIMATIONS_TO_BE_PERFORMED = []
     refreshUI()
     EVENT_LISTENERS_CREATED = true
     setNextTurnType()
     //$('#new_game_modal').modal('show');
-
+    //createFlippableCard([20, 20], 4, "test", () => {console.log("test")})
     //TODO
     //createFlippableCard(DRAWING_PILE_OFFSET, 4, "test", function(){ console.log("transition finished")})
+    //setTimeout(()=>{flipCard("test")}, 500)
     //flipCard("test")
     //moveCard()
 
@@ -1242,6 +1272,8 @@ function handleMouseClick(event) {
     const mouseY = event.clientY;
 
     // Log the coordinates to the console (you can use them as needed)
-    console.log(`Mouse Click Position: X=${mouseX}, Y=${mouseY}`);   
+    console.log(`Mouse Click Position: X=${mouseX}, Y=${mouseY}`)
+    //refreshUI()
+    //flipCard("test")
 }
 document.addEventListener('click', handleMouseClick);
