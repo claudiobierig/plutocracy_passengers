@@ -267,8 +267,6 @@ function setNextTurnType()
 
 function perform_next_turn()
 {
-    console.log(ANIMATIONS_TO_BE_PERFORMED.length)
-    
     try{
         setNextTurnType()
         if(NEXT_TURN_TYPE == ROTATION_TURN)
@@ -438,7 +436,6 @@ function move(element_id, current_position, next_position, onAnimationEnd)
     const animatedImage = document.getElementById(element_id)
     animatedImage.style.animation = keyframe_name + ' 1s ease-in-out forwards'
     const animationEndHandler = () => {
-        console.log("move end")
         const animatedImage = document.getElementById(element_id);
         animatedImage.removeEventListener('animationend', animationEndHandler);
         animatedImage.style.animation = '';
@@ -457,9 +454,7 @@ function moveMultipleElements(element_ids, current_positions, next_positions, on
             current_positions[i],
             next_positions[i],
             () => {
-                console.log("moveMultipleElements End")
                 if(i==0){
-                    console.log("i==0")
                     onAnimationEnd()
                 }
             }
@@ -495,35 +490,22 @@ function perform_animation()
     }
     else if(animation["type"] == "draw_passenger")
     {
-        console.log("animate draw passenger")
-        /*
-        {
-                    "type": "draw_passenger",
-                    "planet": planet,
-                    "passenger": passenger,
-                    "planet_position": PLANET_PASSENGERS[planet].length,
-                    "cardsLeftInPassengerDeck": PASSENGER_DECK.length
-                }
-                */
         const card_name = "draw_passenger_" + animation["passenger"]
-        console.log(card_name)
         createFlippableCard(DRAWING_PILE_OFFSET, animation["passenger"], card_name, () => {
-            console.log("flip finished")
             const passenger_element = document.getElementById('Passenger_' + animation["planet_position"] + '_Planet_' + animation["planet"])
-            let next_position = [passenger_element.style.left, passenger_element.style.top]
+            let next_position = [parseFloat(passenger_element.style.left), parseFloat(passenger_element.style.top)]
             move(card_name, DRAWING_PILE_OFFSET, next_position, () => {
-                console.log("move finished")
-                let passenger_element = document.getElementById('Passenger_' + animation["planet_position"] + '_Planet_' + animation["planet"])
                 passenger_element.src = "pics/" + animation["passenger"] + ".png"
                 passenger_element.style.display = 'block';
                 let card = document.getElementById(card_name)
                 card.remove()
+                //card.style.left = "100px"
+                //card.style.top = "100px"
                 refreshUI() 
             })
         })
         updatePassengerDeck(animation["cardsLeftInPassengerDeck"])
-        //TODO: remove race condition. maybe just a 1 is enough and we only need to do this async so the event handler is registered?
-        setTimeout(()=>{flipCard(card_name)}, 100);
+        setTimeout(()=>{flipCard(card_name)}, 1);
         
     }
     else if(animation["type"] == "draw_passenger_discard_pile")
@@ -745,7 +727,6 @@ function createFlippableCard(position, passenger, id, onTransitionEnd)
 
 function flipCard(el_id)
 {
-    console.log("flip " + el_id)
     let card = document.getElementById(el_id)
     card.classList.toggle('flipped')
 }
@@ -1197,7 +1178,6 @@ function getPlanetPosition(planet, number)
 
 function refreshUI()
 {
-    console.log("refreshUI")
     if(ANIMATIONS_TO_BE_PERFORMED.length > 0){
         perform_animation()
         return
@@ -1244,12 +1224,6 @@ window.onload = function () {
     EVENT_LISTENERS_CREATED = true
     setNextTurnType()
     //$('#new_game_modal').modal('show');
-    //createFlippableCard([20, 20], 4, "test", () => {console.log("test")})
-    //TODO
-    //createFlippableCard(DRAWING_PILE_OFFSET, 4, "test", function(){ console.log("transition finished")})
-    //setTimeout(()=>{flipCard("test")}, 500)
-    //flipCard("test")
-    //moveCard()
 
 };
 
