@@ -334,26 +334,31 @@ function draw_passenger(planet)
             )
             return 0
         }
+        PASSENGER_DECK = DISCARD_PILE
+        DISCARD_PILE = []
         ANIMATIONS_TO_BE_PERFORMED.push(
-            {"type": "flip_discard_pile"}
+            {
+                "type": "flip_discard_pile",
+                "cardsLeftInPassengerDeck": PASSENGER_DECK.length,
+                "cardsOnDiscardPile": DISCARD_PILE.length
+            }
         )
+        shuffle(PASSENGER_DECK)
         ANIMATIONS_TO_BE_PERFORMED.push(
             {"type": "shuffle"}
         )
-        PASSENGER_DECK = DISCARD_PILE
-        DISCARD_PILE = []
-        shuffle(PASSENGER_DECK)
     }
     passenger = PASSENGER_DECK.pop()
     if(passenger_is_for_planet(passenger, planet)){
+        DISCARD_PILE.push(passenger)
         ANIMATIONS_TO_BE_PERFORMED.push(
             {
                 "type": "draw_passenger_discard_pile",
                 "passenger": passenger,
-                "cardsLeftInPassengerDeck": PASSENGER_DECK.length
+                "cardsLeftInPassengerDeck": PASSENGER_DECK.length,
+                "cardsOnDiscardPile": DISCARD_PILE.length
             }
         )
-        DISCARD_PILE.push(passenger)
         return draw_passenger(planet)
     }
     return passenger    
@@ -480,6 +485,7 @@ function animateShuffle()
 function perform_animation()
 {
     let animation = ANIMATIONS_TO_BE_PERFORMED.shift()
+    console.log(animation["type"])
     if(animation["type"] == "MOVE"){
         moveMultipleElements(animation["element_id"], animation["current_position"], animation["next_position"], refreshUI)
         return
@@ -499,8 +505,6 @@ function perform_animation()
                 passenger_element.style.display = 'block';
                 let card = document.getElementById(card_name)
                 card.remove()
-                //card.style.left = "100px"
-                //card.style.top = "100px"
                 refreshUI() 
             })
         })
@@ -510,7 +514,17 @@ function perform_animation()
     }
     else if(animation["type"] == "draw_passenger_discard_pile")
     {
-        refreshUI()
+        const card_name = "draw_passenger_" + animation["passenger"]
+        createFlippableCard(DRAWING_PILE_OFFSET, animation["passenger"], card_name, () => {
+            move(card_name, DRAWING_PILE_OFFSET, DISCARD_PILE_OFFSET, () => {
+                updateDiscardPile(animation["cardsOnDiscardPile"], animation["passenger"])
+                let card = document.getElementById(card_name)
+                card.remove()
+                refreshUI()
+            })
+        })
+        updatePassengerDeck(animation["cardsLeftInPassengerDeck"])
+        setTimeout(()=>{flipCard(card_name)}, 1);
     }
     else if(animation["type"] == "pickup_passenger")
     {
@@ -526,6 +540,8 @@ function perform_animation()
     }
     else if(animation["type"] == "flip_discard_pile")
     {
+        updatePassengerDeck(animation["cardsLeftInPassengerDeck"])
+        updateDiscardPile(animation["cardsOnDiscardPile"], "0")
         refreshUI()
     }
     else
@@ -1223,7 +1239,7 @@ window.onload = function () {
     refreshUI()
     EVENT_LISTENERS_CREATED = true
     setNextTurnType()
-    //$('#new_game_modal').modal('show');
+    $('#new_game_modal').modal('show');
 
 };
 

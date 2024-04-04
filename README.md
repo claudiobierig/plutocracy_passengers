@@ -12,21 +12,20 @@
   - show events happening
     - end turn:
       - pick up passengers, move el from A to B multiple times
-      - fly (start with straight line)
-        - move spaceship
-        - move timedisc
-    - planet rotation
-      - move planets (one after the other, start with straight line)
-      - move event token
     - new passengers, multiple times
       - turn around card
-      - move card from A to B (including discard pile)
-      - move event token
+        - new temp element
+        - move card from A to B (including discard pile)
+        - empty pile
+        - update numbers
+      - shuffle
+        - flip discard pile
+        - shuffle
+      - show only same planet available
     - end event
       - show success message
     - player turn
       - drop of passengers
-    - requires async happening of event itself and next event
     - for replaying require skipping of animation
   - Highscore
     - submit daily challenge
