@@ -179,23 +179,25 @@ function end_turn()
         {
             if(CURRENT_TURN.hasOwnProperty('pick_up'))
             {
+                let animation = {
+                    "type": "pickup_passenger",
+                    "passengers": CURRENT_TURN['pick_up'],
+                    "planet": SPACESHIP_POSITION[0],
+                    "planet_passengers_before": PLANET_PASSENGERS[SPACESHIP_POSITION[0]],
+                    "planet_passengers_after": []
+                }
                 for(let p=0; p <CURRENT_TURN['pick_up'].length; p++)
                 {
                     SHIP_PASSENGERS[CURRENT_TURN['pick_up'][p][1]] = PLANET_PASSENGERS[SPACESHIP_POSITION[0]][CURRENT_TURN['pick_up'][p][0]]
                     PLANET_PASSENGERS[SPACESHIP_POSITION[0]][CURRENT_TURN['pick_up'][p][0]] = 0
                 }
-                let animation = {
-                    "type": "pickup_passenger",
-                    "passengers": CURRENT_TURN['pick_up'],
-                    "planet": SPACESHIP_POSITION[0],
-                    "planet_passengers": PLANET_PASSENGERS[SPACESHIP_POSITION[0]]
-                }
-                ANIMATIONS_TO_BE_PERFORMED.push(animation)
                 
                 let new_passengers = PLANET_PASSENGERS[SPACESHIP_POSITION[0]].filter(function(p){
                     return p != 0
                 })
                 PLANET_PASSENGERS[SPACESHIP_POSITION[0]] = new_passengers
+                animation["planet_passengers_after"] = PLANET_PASSENGERS[SPACESHIP_POSITION[0]]
+                ANIMATIONS_TO_BE_PERFORMED.push(animation)
             }
 
             let tu_animation = {
@@ -503,6 +505,7 @@ function perform_animation()
             move(card_name, DRAWING_PILE_OFFSET, next_position, () => {
                 passenger_element.src = "pics/" + animation["passenger"] + ".png"
                 passenger_element.style.display = 'block';
+                passenger_element.style.opacity = 1
                 let card = document.getElementById(card_name)
                 card.remove()
                 refreshUI() 
@@ -528,10 +531,80 @@ function perform_animation()
     }
     else if(animation["type"] == "pickup_passenger")
     {
+        /*
+        let animation = {
+                    "type": "pickup_passenger",
+                    "passengers": CURRENT_TURN['pick_up'],
+                    "planet": SPACESHIP_POSITION[0],
+                    "planet_passengers_before": PLANET_PASSENGERS[SPACESHIP_POSITION[0]],
+                    "planet_passengers_after": PLANET_PASSENGERS[SPACESHIP_POSITION[0]]
+                }
+                */
+        
+        //create movable image atop of each seat that gets picked up
+        //set below image to transparent
+        
+        //move all to correct seats
+
+        //update seats
+        for(let i=0;i<4; i++){
+            let el = document.getElementById("seat_" + i + "_container")
+            el.classList = ["full"]
+        }
+        //remove images
+
+        //update planet:
+
+        //create movable images atop on left over passengers
+        //set all to transparent
+        
+        //move images to correct spot
+        
+        //update spots below
+        for(let i=0;i<3;i++){
+            let el = document.getElementById('Passenger_' + i + '_Planet_' + animation["planet"])
+            let planet_passengers_after = animation["planet_passengers_before"].filter(function(p){
+                return p != 0
+            })
+            if(i<planet_passengers_after.length){
+                el.src = "pics/" + planet_passengers_after[i] + ".png"
+                el.style.opacity = 1
+            }
+            else{
+                el.src = "pics/0.png"
+                el.style.display = "none"
+            }
+        }
+
+        //remove new images
+        console.log(animation)
         refreshUI()
     }
     else if(animation["type"] == "drop_of_passenger")
     {
+        /*
+        const animation = {
+            "type": "drop_of_passenger",
+            "seats": [],
+            "cardsOnDiscardPile": 0,
+            "passengerOnDiscardPile": 0
+        }
+        */
+        //create movable image atop of each seat that gets droped of
+        //correct ordering, so that the top one stays on top
+        //set below image to 0
+        for(let i=0; i< animation["seats"].length; i++){
+            let el = document.getElementById("seat_" + i)
+            el.src = "pics/0.png"
+        }
+
+        //move all images to discard pile
+
+        //update discard pile
+        updateDiscardPile(animation["cardsOnDiscardPile"], animation["passengerOnDiscardPile"])
+        //remove moving images
+        
+        console.log(animation)
         refreshUI()
     }
     else if(animation["type"] == "all_passengers_for_planet")
@@ -604,7 +677,9 @@ function perform_player_turn()
     if(CURRENT_PLANET_POSITIONS[planet] == SPACESHIP_POSITION[1]){
         const animation = {
             "type": "drop_of_passenger",
-            "seats": []
+            "seats": [],
+            "cardsOnDiscardPile": 0,
+            "passengerOnDiscardPile": 0
         }
         for(let seat = 0; seat < SHIP_PASSENGERS.length; seat++)
         {
@@ -613,8 +688,10 @@ function perform_player_turn()
                 animation["seats"].push(seat)
                 DISCARD_PILE.push(passenger)
                 SHIP_PASSENGERS[seat] = 0
+                animation["passengerOnDiscardPile"] = passenger
             }
         }
+        animation["cardsOnDiscardPile"] = DISCARD_PILE.length
         ANIMATIONS_TO_BE_PERFORMED.push(animation)
     }
 }
