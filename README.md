@@ -5,34 +5,28 @@
   - background image
   - win/loose
   - rules
-  - starting positions
   - blocked
     - seat cards like design
 - Advanced features
   - show events happening
     - end turn:
       - pick up passengers, move el from A to B multiple times
-    - new passengers, multiple times
+    - new passengers, only same planet available
       - turn around card
-        - new temp element
-        - move card from A to B (including discard pile)
-        - empty pile
-        - update numbers
-      - shuffle
-        - flip discard pile
-        - shuffle
       - show only same planet available
     - end event
       - show success message
     - player turn
       - drop of passengers
     - for replaying require skipping of animation
+    - make animation speed configurable (skippable)
   - Highscore
     - submit daily challenge
+    - load from text file
     - for each succeeded challenge, one chance
   - show warning if we are travelling for too long
   - show history
-  - load from text file
+
 - refactor
   - create and use getters/setters to get rid of array magics
   - state into one object
