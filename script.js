@@ -1169,12 +1169,12 @@ function setPositionFixedElements()
 
     for(let seat=0; seat<4; seat++)
     {
-        let el = document.getElementById("marker_" + seat)
-        el.style.position = 'absolute';
-        el.style.display = 'block';
-        var rect = el.getBoundingClientRect();//TODO working?
-        el.style.left = SHIP_OFFSET[0] + seat*80 + 30 + "px"
-        el.style.top = SHIP_OFFSET[1] - rect.height + "px"
+        setPosition("marker_" + seat,
+            [
+                SHIP_OFFSET[0] + seat*80,
+                SHIP_OFFSET[1] - 40
+            ]
+        )
 
         let el2_container = document.getElementById("seat_" + seat + "_container")
         el2_container.classList = ["full"]
