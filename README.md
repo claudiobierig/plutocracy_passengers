@@ -2,10 +2,7 @@
 
 - MVP
   - buttons look nice
-  - background image
   - rules
-  - blocked
-    - seat cards like design
 - Advanced features
   - show events happening
     - end turn:
