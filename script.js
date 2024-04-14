@@ -290,11 +290,17 @@ function perform_next_turn()
     }
     catch(error)
     {
-        let el = document.getElementById('new_game_result')
+        let el = document.getElementById('game_end_text')
         el.innerHTML = error.message
         el.style.display = 'block';
-        $('#new_game_modal').modal('show');
+        $('#game_end_modal').modal('show');
     }
+}
+
+function open_new_game()
+{
+    $('#game_end_modal').modal('hide');
+    $('#new_game_modal').modal('show');
 }
 
 function setHelperText(message)
@@ -366,6 +372,12 @@ function draw_passenger(planet)
     return passenger    
 }
 
+function planet_number_to_name(planet)
+{
+    const planets = ['Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptun']
+    return planets[planet]
+}
+
 function perform_passenger_event()
 {
     if(NEXT_TURN_TYPE != CHOOSE_STARTING_POSITION)
@@ -390,7 +402,7 @@ function perform_passenger_event()
     for(let planet=0;planet<CURRENT_PLANET_POSITIONS.length;planet++){
         if(PLANET_PASSENGERS[planet].length >=3)
         {
-            throw new Error("You loose. Already 3 passengers at "+ planet);
+            throw new Error("You loose. Already 3 passengers on "+ planet_number_to_name(planet));
         }
         passenger = draw_passenger(planet)
         if(passenger != 0){
@@ -1291,6 +1303,11 @@ function refreshUI()
     }
     if(SPACESHIP_POSITION.length == 2){
         el = setPosition('ship_marker', getShipPosition(SPACESHIP_POSITION))
+    }
+    else
+    {
+        el = document.getElementById('ship_marker')
+        el.style.display = "none"
     }
 
     updatePassengerDeck(PASSENGER_DECK.length)

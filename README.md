@@ -3,7 +3,6 @@
 - MVP
   - buttons look nice
   - background image
-  - win/loose
   - rules
   - blocked
     - seat cards like design
@@ -14,8 +13,6 @@
     - new passengers, only same planet available
       - turn around card
       - show only same planet available
-    - end event
-      - show success message
     - player turn
       - drop of passengers
     - for replaying require skipping of animation
